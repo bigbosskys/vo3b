@@ -21,10 +21,58 @@
             direction: rtl;
         }
 
+        /* شاشة تسجيل الدخول */
+        #loginOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 10vh;
+            z-index: 2000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .login-box h2 { margin-bottom: 20px; color: var(--primary); }
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #mainContent { display: none; }
+
         .container { max-width: 100%; margin: auto; }
 
-        /* نافذة الكود السري */
-        #customModal {
+        /* النوافذ المنبثقة */
+        #customModal, #historyModal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -34,16 +82,18 @@
             align-items: center;
         }
 
-        .modal-content {
+        .modal-content, .history-content {
             background: white;
             padding: 20px;
             border-radius: 12px;
-            width: 280px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        .modal-content h3 { margin-top: 0; color: var(--primary); font-size: 16px; }
+        .history-content { max-width: 600px; max-height: 80vh; overflow-y: auto; text-align: right; }
+
+        .modal-content h3, .history-content h3 { margin-top: 0; color: var(--primary); }
         .modal-content input {
             width: 80%;
             padding: 12px;
@@ -74,7 +124,7 @@
         label { font-size: 11px; color: #666; white-space: nowrap; margin: 0 2px; }
 
         button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap; }
-        .add-btn { background: var(--success); color: white; transition: 0.3s; }
+        .add-btn { background: var(--success); color: white; }
         .reset-btn { background: #95a5a6; color: white; }
 
         /* الجدول */
@@ -94,85 +144,140 @@
         .del-btn { background: var(--danger); color: white; padding: 5px 8px; border-radius: 4px; }
         
         .sync-indicator { font-size: 11px; color: #27ae60; text-align: center; margin-bottom: 5px; font-weight: bold; }
+
+        /* تحسين شكل الاسم */
+        .emp-clickable { color: var(--info); cursor: pointer; text-decoration: underline; transition: 0.2s; }
+        .emp-clickable:hover { color: #2c3e50; }
+
+        .total-row { background: #f9f9f9; font-weight: bold; color: var(--primary); border-top: 2px solid #ddd; }
     </style>
 </head>
 <body>
 
-<div id="customModal">
-    <div class="modal-content">
-        <h3 id="modalTitle">التحقق من الهوية</h3>
-        <input type="password" id="modalInput" placeholder="****">
-        <div class="modal-btns">
-            <button class="confirm-btn" onclick="handleModalConfirm()">تأكيد</button>
-            <button class="cancel-btn" onclick="closeModal()">إلغاء</button>
+<div id="loginOverlay">
+    <div class="login-box">
+        <h2>تسجيل الدخول</h2>
+        <input type="text" id="loginUser" placeholder="اسم المستخدم" autofocus>
+        <input type="password" id="loginPass" placeholder="كلمة المرور">
+        <button class="login-btn" onclick="checkLogin()">دخول</button>
+    </div>
+</div>
+
+<div id="mainContent">
+    <div id="customModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">التحقق من الهوية</h3>
+            <input type="password" id="modalInput" placeholder="****">
+            <div class="modal-btns">
+                <button class="confirm-btn" onclick="handleModalConfirm()">تأكيد</button>
+                <button class="cancel-btn" onclick="closeModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyModal">
+        <div class="history-content">
+            <h3 id="histName">سجل إجازات الموظف</h3>
+            <table style="min-width: 100%;">
+                <thead>
+                    <tr>
+                        <th>النوع</th>
+                        <th>من</th>
+                        <th>إلى</th>
+                        <th>المدة</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody"></tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="3">إجمالي الأيام المستهلكة:</td>
+                        <td id="totalDaysSum">0 يوم</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br>
+            <button class="cancel-btn" onclick="closeHistory()" style="width:100%">إغلاق السجل</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sync-indicator" id="syncStatus">● متصل بالسحابة (Vo3b)</div>
+
+        <div class="inline-toolbar">
+            <input type="text" id="searchName" class="name-field" placeholder="🔍 ابحث بالاسم..." onkeyup="filterData()">
+            <select id="searchType" onchange="filterData()">
+                <option value="">كل الأنواع</option>
+                <option value="سنوية">سنوية</option>
+                <option value="عرضية">عرضية</option>
+                <option value="مرضية">مرضية</option>
+                <option value="مرخوص">مرخوص</option>
+                <option value="أخرى">أخرى</option>
+            </select>
+            <label>من:</label>
+            <input type="date" id="searchFrom" onchange="filterData()">
+            <label>إلى:</label>
+            <input type="date" id="searchTo" onchange="filterData()">
+            <button class="reset-btn" onclick="location.reload()">🔄</button>
+        </div>
+
+        <div class="inline-toolbar" style="border-right: 5px solid var(--success);">
+            <input type="text" id="empName" class="name-field" placeholder="اسم الموظف" list="employeesList">
+            <datalist id="employeesList">
+                </datalist>
+            <select id="leaveType">
+                <option value="سنوية">سنوية</option>
+                <option value="عرضية">عرضية</option>
+                <option value="مرضية">مرضية</option>
+                <option value="مرخوص">مرخوص</option>
+                <option value="أخرى">أخرى</option>
+            </select>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+            <button class="add-btn" onclick="openModal('ADD')">➕ حفظ سحابي</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>النوع</th>
+                        <th>من</th>
+                        <th>إلى</th>
+                        <th>المدة</th>
+                        <th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTable">
+                    <tr><td colspan="6" style="text-align:center; padding: 20px;">جاري جلب البيانات من السحابة...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-<div class="container">
-    <div class="sync-indicator" id="syncStatus">● متصل بالسحابة (Vo3b)</div>
-
-    <div class="inline-toolbar">
-        <input type="text" id="searchName" class="name-field" placeholder="🔍 ابحث بالاسم..." onkeyup="filterData()">
-        <select id="searchType" onchange="filterData()">
-            <option value="">كل الأنواع</option>
-            <option value="سنوية">سنوية</option>
-            <option value="عرضية">عرضية</option>
-            <option value="مرضية">مرضية</option>
-            <option value="مرخوص">مرخوص</option>
-            <option value="أخرى">أخرى</option>
-        </select>
-        <label>من:</label>
-        <input type="date" id="searchFrom" onchange="filterData()">
-        <label>إلى:</label>
-        <input type="date" id="searchTo" onchange="filterData()">
-        <button class="reset-btn" onclick="location.reload()">🔄</button>
-    </div>
-
-    <div class="inline-toolbar" style="border-right: 5px solid var(--success);">
-        <input type="text" id="empName" class="name-field" placeholder="اسم الموظف الجديد">
-        <select id="leaveType">
-            <option value="سنوية">سنوية</option>
-            <option value="عرضية">عرضية</option>
-            <option value="مرضية">مرضية</option>
-            <option value="مرخوص">مرخوص</option>
-            <option value="أخرى">أخرى</option>
-        </select>
-        <input type="date" id="startDate">
-        <input type="date" id="endDate">
-        <button class="add-btn" onclick="openModal('ADD')">➕ حفظ سحابي</button>
-    </div>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>الاسم</th>
-                    <th>النوع</th>
-                    <th>من</th>
-                    <th>إلى</th>
-                    <th>المدة</th>
-                    <th>إجراء</th>
-                </tr>
-            </thead>
-            <tbody id="employeeTable">
-                <tr><td colspan="6" style="text-align:center; padding: 20px;">جاري جلب البيانات من السحابة...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
 <script>
+    const AUTH = { user: "admin", pass: "admin929210" };
     const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
     const DB_JSON_URL = `${DB_BASE_URL}.json`;
-    
     const DELETE_CODE = "91222"; 
     const ADD_CODE = "90009";    
     
     let currentMode = ""; 
     let pendingDeleteKey = null;
+    let allRecords = [];
 
-    document.addEventListener('DOMContentLoaded', loadData);
+    function checkLogin() {
+        const u = document.getElementById('loginUser').value;
+        const p = document.getElementById('loginPass').value;
+        if (u === AUTH.user && p === AUTH.pass) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            loadData();
+        } else {
+            alert("خطأ في اسم المستخدم أو كلمة المرور!");
+        }
+    }
 
     async function loadData() {
         const status = document.getElementById('syncStatus');
@@ -180,7 +285,9 @@
         try {
             const response = await fetch(DB_JSON_URL);
             const data = await response.json();
-            renderTable(data);
+            allRecords = data ? Object.keys(data).map(key => ({ ...data[key], firebaseKey: key })) : [];
+            updateEmployeeDatalist(); // تحديث قائمة الأسماء التلقائية
+            renderTable(allRecords);
             status.innerText = "● متصل بالسحابة (Vo3b)";
             status.style.color = "#27ae60";
         } catch (error) {
@@ -189,25 +296,31 @@
         }
     }
 
-    function renderTable(data) {
+    // وظيفة استخراج الأسماء الفريدة وتعبئة القائمة
+    function updateEmployeeDatalist() {
+        const list = document.getElementById('employeesList');
+        const uniqueNames = [...new Set(allRecords.map(item => item.name))];
+        list.innerHTML = "";
+        uniqueNames.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            list.appendChild(option);
+        });
+    }
+
+    function renderTable(items) {
         const tbody = document.getElementById('employeeTable');
         tbody.innerHTML = "";
-        
-        if (!data) {
+        if (items.length === 0) {
             tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>لا توجد بيانات.</td></tr>";
             return;
         }
-
-        const items = Object.keys(data).map(key => ({ ...data[key], firebaseKey: key }));
         items.sort((a, b) => b.id - a.id).forEach(emp => {
             const days = calculateDays(emp.start, emp.end);
             const tClass = getBadgeClass(emp.type);
-            
             tbody.innerHTML += `
-                <tr data-name="${emp.name.toLowerCase()}" 
-                    data-type="${emp.type}" 
-                    data-start="${emp.start}">
-                    <td><strong>${emp.name}</strong></td>
+                <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}">
+                    <td><strong class="emp-clickable" onclick="viewHistory('${emp.name}')">${emp.name}</strong></td>
                     <td><span class="badge ${tClass}">${emp.type}</span></td>
                     <td>${emp.start}</td>
                     <td>${emp.end}</td>
@@ -217,14 +330,36 @@
         });
     }
 
+    function viewHistory(name) {
+        const historyBody = document.getElementById('historyTableBody');
+        const histNameTitle = document.getElementById('histName');
+        const totalDaysEl = document.getElementById('totalDaysSum');
+        historyBody.innerHTML = "";
+        histNameTitle.innerText = `سجل إجازات: ${name}`;
+        const filtered = allRecords.filter(r => r.name === name);
+        let total = 0;
+        filtered.forEach(rec => {
+            const d = calculateDays(rec.start, rec.end);
+            total += d;
+            historyBody.innerHTML += `<tr>
+                <td><span class="badge ${getBadgeClass(rec.type)}">${rec.type}</span></td>
+                <td>${rec.start}</td>
+                <td>${rec.end}</td>
+                <td>${d} يوم</td>
+            </tr>`;
+        });
+        totalDaysEl.innerText = `${total} يوم`;
+        document.getElementById('historyModal').style.display = 'flex';
+    }
+
+    function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
+
     async function executeAdd() {
         const name = document.getElementById('empName').value.trim();
         const type = document.getElementById('leaveType').value;
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
-
         if (!name || !start || !end) return alert("يرجى إكمال البيانات");
-
         const newEntry = { id: Date.now(), name, type, start, end };
         try {
             await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
@@ -271,35 +406,28 @@
         return types[type] || 'other';
     }
 
-    // دالة البحث المتقدمة (تشمل التاريخ)
     function filterData() {
         const nameVal = document.getElementById("searchName").value.toLowerCase();
         const typeVal = document.getElementById("searchType").value;
         const fromDate = document.getElementById("searchFrom").value;
         const toDate = document.getElementById("searchTo").value;
-
         document.querySelectorAll("#employeeTable tr").forEach(tr => {
             const rowName = tr.getAttribute("data-name");
             const rowType = tr.getAttribute("data-type");
             const rowStart = tr.getAttribute("data-start");
-
             if (rowName) {
                 const matchN = rowName.includes(nameVal);
                 const matchT = typeVal === "" || rowType === typeVal;
-                
-                // تصفية التاريخ
                 let matchDate = true;
                 if (fromDate && rowStart < fromDate) matchDate = false;
                 if (toDate && rowStart > toDate) matchDate = false;
-
                 tr.style.display = (matchN && matchT && matchDate) ? "" : "none";
             }
         });
     }
 
-    document.getElementById('modalInput').addEventListener("keypress", (e) => {
-        if (e.key === "Enter") handleModalConfirm();
-    });
+    document.getElementById('modalInput').addEventListener("keypress", (e) => { if (e.key === "Enter") handleModalConfirm(); });
+    document.getElementById('loginPass').addEventListener("keypress", (e) => { if (e.key === "Enter") checkLogin(); });
 </script>
 </body>
 </html>
