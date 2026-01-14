@@ -228,7 +228,7 @@
             <input type="date" id="searchFrom" onchange="filterData()">
             <label>إلى:</label>
             <input type="date" id="searchTo" onchange="filterData()">
-            <button class="reset-btn" onclick="location.reload()">🔄</button>
+            <button class="reset-btn" title="مسح الفلاتر" onclick="clearFilters()">🔄</button>
         </div>
 
         <div class="inline-toolbar" style="border-right: 5px solid var(--success);">
@@ -271,7 +271,6 @@
 </div>
 
 <script>
-    // الإعدادات
     const AUTH = { user: "admin", pass: "admin929210" };
     const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
     const DB_JSON_URL = `${DB_BASE_URL}.json`;
@@ -285,7 +284,6 @@
     let pendingDeleteKey = null;
     let allRecords = [];
 
-    // دالة إرسال الإشعارات الشاملة لتليجرام
     async function sendTelegramMsg(text) {
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
         try { await fetch(url); } catch (e) { console.error("Telegram Error"); }
@@ -342,8 +340,9 @@
         items.sort((a, b) => b.id - a.id).forEach(emp => {
             const days = calculateDays(emp.start, emp.end);
             const tClass = getBadgeClass(emp.type);
+            // إضافة data-end هنا ضروري للبحث بالتواريخ
             tbody.innerHTML += `
-                <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}">
+                <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}" data-end="${emp.end}">
                     <td><strong class="emp-clickable" onclick="viewHistory('${emp.name}')">${emp.name}</strong></td>
                     <td><span class="badge ${tClass}">${emp.type}</span></td>
                     <td>${emp.start}</td>
@@ -352,6 +351,47 @@
                     <td><button class="del-btn" onclick="openModal('DELETE', '${emp.firebaseKey}')">حذف</button></td>
                 </tr>`;
         });
+    }
+
+    // دالة البحث المتقدمة بالتواريخ
+    function filterData() {
+        const nameVal = document.getElementById("searchName").value.toLowerCase();
+        const typeVal = document.getElementById("searchType").value;
+        const fromVal = document.getElementById("searchFrom").value;
+        const toVal = document.getElementById("searchTo").value;
+
+        document.querySelectorAll("#employeeTable tr").forEach(tr => {
+            const rowName = tr.getAttribute("data-name");
+            const rowType = tr.getAttribute("data-type");
+            const rowStart = tr.getAttribute("data-start");
+            const rowEnd = tr.getAttribute("data-end");
+
+            if (rowName) {
+                const matchN = rowName.includes(nameVal);
+                const matchT = typeVal === "" || rowType === typeVal;
+                
+                let matchDate = true;
+                if (fromVal && toVal) {
+                    // التداخل المنطقي: تبدأ قبل نهاية البحث وتنتهي بعد بداية البحث
+                    matchDate = (rowStart <= toVal && rowEnd >= fromVal);
+                } else if (fromVal) {
+                    matchDate = (rowEnd >= fromVal);
+                } else if (toVal) {
+                    matchDate = (rowStart <= toVal);
+                }
+
+                tr.style.display = (matchN && matchT && matchDate) ? "" : "none";
+            }
+        });
+    }
+
+    // مسح الفلاتر دون الخروج
+    function clearFilters() {
+        document.getElementById("searchName").value = "";
+        document.getElementById("searchType").value = "";
+        document.getElementById("searchFrom").value = "";
+        document.getElementById("searchTo").value = "";
+        filterData();
     }
 
     function viewHistory(name) {
@@ -426,20 +466,6 @@
     function getBadgeClass(type) {
         const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted' };
         return types[type] || 'other';
-    }
-
-    function filterData() {
-        const nameVal = document.getElementById("searchName").value.toLowerCase();
-        const typeVal = document.getElementById("searchType").value;
-        document.querySelectorAll("#employeeTable tr").forEach(tr => {
-            const rowName = tr.getAttribute("data-name");
-            const rowType = tr.getAttribute("data-type");
-            if (rowName) {
-                const matchN = rowName.includes(nameVal);
-                const matchT = typeVal === "" || rowType === typeVal;
-                tr.style.display = (matchN && matchT) ? "" : "none";
-            }
-        });
     }
 </script>
 </body>
