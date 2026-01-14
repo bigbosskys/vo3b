@@ -29,7 +29,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: 10vh;
+            padding-top: 15vh;
             z-index: 2000;
         }
 
@@ -128,7 +128,7 @@
         .reset-btn { background: #95a5a6; color: white; }
 
         /* الجدول */
-        .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 10px; min-height: 200px; }
+        .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 5px; min-height: 200px; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th { background: #f8f9fa; padding: 12px 10px; font-size: 12px; text-align: right; border-bottom: 2px solid #eee; color: #555; }
         td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
@@ -145,11 +145,19 @@
         
         .sync-indicator { font-size: 11px; color: #27ae60; text-align: center; margin-bottom: 5px; font-weight: bold; }
 
-        /* تحسين شكل الاسم */
         .emp-clickable { color: var(--info); cursor: pointer; text-decoration: underline; transition: 0.2s; }
         .emp-clickable:hover { color: #2c3e50; }
 
         .total-row { background: #f9f9f9; font-weight: bold; color: var(--primary); border-top: 2px solid #ddd; }
+
+        .copyright {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 11px;
+            margin-top: 15px;
+            padding-bottom: 10px;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
@@ -160,6 +168,9 @@
         <input type="text" id="loginUser" placeholder="اسم المستخدم" autofocus>
         <input type="password" id="loginPass" placeholder="كلمة المرور">
         <button class="login-btn" onclick="checkLogin()">دخول</button>
+        <div class="copyright">
+            © 2026 Vo3b. All Rights Reserved.
+        </div>
     </div>
 </div>
 
@@ -222,8 +233,7 @@
 
         <div class="inline-toolbar" style="border-right: 5px solid var(--success);">
             <input type="text" id="empName" class="name-field" placeholder="اسم الموظف" list="employeesList">
-            <datalist id="employeesList">
-                </datalist>
+            <datalist id="employeesList"></datalist>
             <select id="leaveType">
                 <option value="سنوية">سنوية</option>
                 <option value="عرضية">عرضية</option>
@@ -249,33 +259,48 @@
                     </tr>
                 </thead>
                 <tbody id="employeeTable">
-                    <tr><td colspan="6" style="text-align:center; padding: 20px;">جاري جلب البيانات من السحابة...</td></tr>
+                    <tr><td colspan="6" style="text-align:center; padding: 20px;">جاري جلب البيانات...</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="copyright">
+            © 2026 Vo3b. All Rights Reserved.
         </div>
     </div>
 </div>
 
 <script>
+    // الإعدادات
     const AUTH = { user: "admin", pass: "admin929210" };
     const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
     const DB_JSON_URL = `${DB_BASE_URL}.json`;
     const DELETE_CODE = "91222"; 
-    const ADD_CODE = "90009";    
-    
+    const ADD_CODE = "90009";
+
+    const BOT_TOKEN = "8409072076:AAGn9aPBY1Y6M9HqPykXqe62txwczkF0pI0";
+    const CHAT_ID = "56826977";
+
     let currentMode = ""; 
     let pendingDeleteKey = null;
     let allRecords = [];
+
+    // دالة إرسال الإشعارات الشاملة لتليجرام
+    async function sendTelegramMsg(text) {
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
+        try { await fetch(url); } catch (e) { console.error("Telegram Error"); }
+    }
 
     function checkLogin() {
         const u = document.getElementById('loginUser').value;
         const p = document.getElementById('loginPass').value;
         if (u === AUTH.user && p === AUTH.pass) {
+            sendTelegramMsg(`🔓 دخول جديد:\nالمستخدم: ${u}\nالوقت: ${new Date().toLocaleString('ar-SA')}`);
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             loadData();
         } else {
-            alert("خطأ في اسم المستخدم أو كلمة المرور!");
+            alert("خطأ في بيانات الدخول!");
         }
     }
 
@@ -286,7 +311,7 @@
             const response = await fetch(DB_JSON_URL);
             const data = await response.json();
             allRecords = data ? Object.keys(data).map(key => ({ ...data[key], firebaseKey: key })) : [];
-            updateEmployeeDatalist(); // تحديث قائمة الأسماء التلقائية
+            updateEmployeeDatalist(); 
             renderTable(allRecords);
             status.innerText = "● متصل بالسحابة (Vo3b)";
             status.style.color = "#27ae60";
@@ -296,7 +321,6 @@
         }
     }
 
-    // وظيفة استخراج الأسماء الفريدة وتعبئة القائمة
     function updateEmployeeDatalist() {
         const list = document.getElementById('employeesList');
         const uniqueNames = [...new Set(allRecords.map(item => item.name))];
@@ -332,21 +356,15 @@
 
     function viewHistory(name) {
         const historyBody = document.getElementById('historyTableBody');
-        const histNameTitle = document.getElementById('histName');
         const totalDaysEl = document.getElementById('totalDaysSum');
         historyBody.innerHTML = "";
-        histNameTitle.innerText = `سجل إجازات: ${name}`;
+        document.getElementById('histName').innerText = `سجل إجازات: ${name}`;
         const filtered = allRecords.filter(r => r.name === name);
         let total = 0;
         filtered.forEach(rec => {
             const d = calculateDays(rec.start, rec.end);
             total += d;
-            historyBody.innerHTML += `<tr>
-                <td><span class="badge ${getBadgeClass(rec.type)}">${rec.type}</span></td>
-                <td>${rec.start}</td>
-                <td>${rec.end}</td>
-                <td>${d} يوم</td>
-            </tr>`;
+            historyBody.innerHTML += `<tr><td>${rec.type}</td><td>${rec.start}</td><td>${rec.end}</td><td>${d} يوم</td></tr>`;
         });
         totalDaysEl.innerText = `${total} يوم`;
         document.getElementById('historyModal').style.display = 'flex';
@@ -363,14 +381,17 @@
         const newEntry = { id: Date.now(), name, type, start, end };
         try {
             await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
+            sendTelegramMsg(`➕ تم إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم`);
             document.getElementById('empName').value = "";
             loadData();
         } catch (error) { alert("خطأ في الحفظ"); }
     }
 
     async function executeDelete(key) {
+        const emp = allRecords.find(r => r.firebaseKey === key);
         try {
             await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'DELETE' });
+            sendTelegramMsg(`🗑️ تم حذف إجازة:\nالموظف: ${emp ? emp.name : 'غير معروف'}`);
             loadData();
         } catch (error) { alert("فشل الحذف"); }
     }
@@ -390,14 +411,15 @@
         const code = document.getElementById('modalInput').value;
         if (currentMode === 'ADD' && code === ADD_CODE) executeAdd();
         else if (currentMode === 'DELETE' && code === DELETE_CODE) executeDelete(pendingDeleteKey);
-        else return alert("الكود خطأ!");
+        else {
+            sendTelegramMsg(`🚨 محاولة فاشلة:\nاستخدام كود خطأ (${code}) أثناء ${currentMode === 'ADD' ? 'الإضافة' : 'الحذف'}`);
+            return alert("الكود خطأ!");
+        }
         closeModal();
     }
 
     function calculateDays(s, e) {
-        const d1 = new Date(s);
-        const d2 = new Date(e);
-        const diff = Math.ceil(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+        const diff = Math.ceil(Math.abs(new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24)) + 1;
         return isNaN(diff) ? 0 : diff;
     }
 
@@ -409,25 +431,16 @@
     function filterData() {
         const nameVal = document.getElementById("searchName").value.toLowerCase();
         const typeVal = document.getElementById("searchType").value;
-        const fromDate = document.getElementById("searchFrom").value;
-        const toDate = document.getElementById("searchTo").value;
         document.querySelectorAll("#employeeTable tr").forEach(tr => {
             const rowName = tr.getAttribute("data-name");
             const rowType = tr.getAttribute("data-type");
-            const rowStart = tr.getAttribute("data-start");
             if (rowName) {
                 const matchN = rowName.includes(nameVal);
                 const matchT = typeVal === "" || rowType === typeVal;
-                let matchDate = true;
-                if (fromDate && rowStart < fromDate) matchDate = false;
-                if (toDate && rowStart > toDate) matchDate = false;
-                tr.style.display = (matchN && matchT && matchDate) ? "" : "none";
+                tr.style.display = (matchN && matchT) ? "" : "none";
             }
         });
     }
-
-    document.getElementById('modalInput').addEventListener("keypress", (e) => { if (e.key === "Enter") handleModalConfirm(); });
-    document.getElementById('loginPass').addEventListener("keypress", (e) => { if (e.key === "Enter") checkLogin(); });
 </script>
 </body>
 </html>
