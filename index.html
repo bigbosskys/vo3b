@@ -10,6 +10,7 @@
             --success: #27ae60;
             --danger: #e74c3c;
             --info: #8e44ad;
+            --warning: #f39c12;
             --bg: #f4f7f6;
         }
 
@@ -125,11 +126,12 @@
 
         button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap; }
         .add-btn { background: var(--success); color: white; }
+        .update-btn { background: var(--info); color: white; }
         .reset-btn { background: #95a5a6; color: white; }
 
         /* الجدول */
         .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 5px; min-height: 200px; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        table { width: 100%; border-collapse: collapse; min-width: 750px; }
         th { background: #f8f9fa; padding: 12px 10px; font-size: 12px; text-align: right; border-bottom: 2px solid #eee; color: #555; }
         td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
 
@@ -141,7 +143,8 @@
         .other { background: #95a5a6; }
         
         .days-tag { background: #f1c40f; color: black; padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 11px; }
-        .del-btn { background: var(--danger); color: white; padding: 5px 8px; border-radius: 4px; }
+        .del-btn { background: var(--danger); color: white; padding: 5px 8px; border-radius: 4px; margin-right: 2px; }
+        .edit-btn { background: var(--warning); color: white; padding: 5px 8px; border-radius: 4px; }
         
         .sync-indicator { font-size: 11px; color: #27ae60; text-align: center; margin-bottom: 5px; font-weight: bold; }
 
@@ -243,7 +246,8 @@
             </select>
             <input type="date" id="startDate">
             <input type="date" id="endDate">
-            <button class="add-btn" onclick="openModal('ADD')">➕ حفظ سحابي</button>
+            <button id="mainActionBtn" class="add-btn" onclick="openModal('ADD')">➕ حفظ سحابي</button>
+            <button id="cancelEditBtn" class="cancel-btn" onclick="resetForm()" style="display:none;">إلغاء</button>
         </div>
 
         <div class="table-container">
@@ -255,7 +259,7 @@
                         <th>من</th>
                         <th>إلى</th>
                         <th>المدة</th>
-                        <th>إجراء</th>
+                        <th>إجراءات</th>
                     </tr>
                 </thead>
                 <tbody id="employeeTable">
@@ -271,18 +275,18 @@
 </div>
 
 <script>
-    const AUTH = { user: "admin", pass: "admin929210" };
+    const ACCOUNTS = { "admin": "admin929210", "bigbosskys": "bigbosskys84" };
     const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
     const DB_JSON_URL = `${DB_BASE_URL}.json`;
     const DELETE_CODE = "91222"; 
     const ADD_CODE = "90009";
-
     const BOT_TOKEN = "8409072076:AAGn9aPBY1Y6M9HqPykXqe62txwczkF0pI0";
     const CHAT_ID = "56826977";
 
     let currentMode = ""; 
-    let pendingDeleteKey = null;
+    let selectedKey = null;
     let allRecords = [];
+    let currentUser = "";
 
     async function sendTelegramMsg(text) {
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
@@ -292,12 +296,14 @@
     function checkLogin() {
         const u = document.getElementById('loginUser').value;
         const p = document.getElementById('loginPass').value;
-        if (u === AUTH.user && p === AUTH.pass) {
-            sendTelegramMsg(`🔓 دخول جديد:\nالمستخدم: ${u}\nالوقت: ${new Date().toLocaleString('ar-SA')}`);
+        if (ACCOUNTS[u] && ACCOUNTS[u] === p) {
+            currentUser = u;
+            if (u !== "admin") sendTelegramMsg(`🔓 دخول جديد:\nالمستخدم: ${u}\nالوقت: ${new Date().toLocaleString('ar-SA')}`);
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             loadData();
         } else {
+            sendTelegramMsg(`⚠️ محاولة دخول فاشلة:\nالاسم: ${u}\nالباسورد: ${p}`);
             alert("خطأ في بيانات الدخول!");
         }
     }
@@ -340,7 +346,6 @@
         items.sort((a, b) => b.id - a.id).forEach(emp => {
             const days = calculateDays(emp.start, emp.end);
             const tClass = getBadgeClass(emp.type);
-            // إضافة data-end هنا ضروري للبحث بالتواريخ
             tbody.innerHTML += `
                 <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}" data-end="${emp.end}">
                     <td><strong class="emp-clickable" onclick="viewHistory('${emp.name}')">${emp.name}</strong></td>
@@ -348,44 +353,132 @@
                     <td>${emp.start}</td>
                     <td>${emp.end}</td>
                     <td><span class="days-tag">${days} يوم</span></td>
-                    <td><button class="del-btn" onclick="openModal('DELETE', '${emp.firebaseKey}')">حذف</button></td>
+                    <td>
+                        <button class="edit-btn" onclick="prepareEdit('${emp.firebaseKey}')">تعديل</button>
+                        <button class="del-btn" onclick="openModal('DELETE', '${emp.firebaseKey}')">حذف</button>
+                    </td>
                 </tr>`;
         });
     }
 
-    // دالة البحث المتقدمة بالتواريخ
+    function prepareEdit(key) {
+        const emp = allRecords.find(r => r.firebaseKey === key);
+        if (!emp) return;
+        selectedKey = key;
+        document.getElementById('empName').value = emp.name;
+        document.getElementById('leaveType').value = emp.type;
+        document.getElementById('startDate').value = emp.start;
+        document.getElementById('endDate').value = emp.end;
+        
+        const btn = document.getElementById('mainActionBtn');
+        btn.innerText = "📝 تحديث البيانات";
+        btn.className = "update-btn";
+        btn.onclick = () => openModal('EDIT', key);
+        document.getElementById('cancelEditBtn').style.display = "inline-block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+        selectedKey = null;
+        document.getElementById('empName').value = "";
+        document.getElementById('startDate').value = "";
+        document.getElementById('endDate').value = "";
+        const btn = document.getElementById('mainActionBtn');
+        btn.innerText = "➕ حفظ سحابي";
+        btn.className = "add-btn";
+        btn.onclick = () => openModal('ADD');
+        document.getElementById('cancelEditBtn').style.display = "none";
+    }
+
+    async function executeUpdate(key) {
+        const name = document.getElementById('empName').value.trim();
+        const type = document.getElementById('leaveType').value;
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const oldData = allRecords.find(r => r.firebaseKey === key);
+
+        if (!name || !start || !end) return alert("يرجى إكمال البيانات");
+
+        const updatedData = { ...oldData, name, type, start, end };
+        try {
+            await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(updatedData) });
+            sendTelegramMsg(`📝 تم تعديل إجازة:\nالموظف: ${name}\nبواسطة: ${currentUser}\n\nالسابق: (${oldData.start} إلى ${oldData.end})\nالجديد: (${start} إلى ${end})\nالنوع: ${type}`);
+            resetForm();
+            loadData();
+        } catch (error) { alert("خطأ في التحديث"); }
+    }
+
+    async function executeAdd() {
+        const name = document.getElementById('empName').value.trim();
+        const type = document.getElementById('leaveType').value;
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        if (!name || !start || !end) return alert("يرجى إكمال البيانات");
+        const newEntry = { id: Date.now(), name, type, start, end };
+        try {
+            await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
+            sendTelegramMsg(`➕ إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم\nبواسطة: ${currentUser}`);
+            resetForm();
+            loadData();
+        } catch (error) { alert("خطأ في الحفظ"); }
+    }
+
+    async function executeDelete(key) {
+        const emp = allRecords.find(r => r.firebaseKey === key);
+        try {
+            await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'DELETE' });
+            sendTelegramMsg(`🗑️ حذف إجازة:\nالموظف: ${emp ? emp.name : 'غير معروف'}\nبواسطة: ${currentUser}`);
+            loadData();
+        } catch (error) { alert("فشل الحذف"); }
+    }
+
+    function openModal(mode, key = null) {
+        currentMode = mode;
+        selectedKey = key;
+        document.getElementById('modalTitle').innerText = (mode === 'DELETE') ? "كود الحذف" : "كود التحقق";
+        document.getElementById('modalInput').value = "";
+        document.getElementById('customModal').style.display = 'flex';
+        document.getElementById('modalInput').focus();
+    }
+
+    function closeModal() { document.getElementById('customModal').style.display = 'none'; }
+
+    function handleModalConfirm() {
+        const code = document.getElementById('modalInput').value;
+        if ((currentMode === 'ADD' || currentMode === 'EDIT') && code === ADD_CODE) {
+            if (currentMode === 'ADD') executeAdd(); else executeUpdate(selectedKey);
+        }
+        else if (currentMode === 'DELETE' && code === DELETE_CODE) {
+            executeDelete(selectedKey);
+        }
+        else {
+            sendTelegramMsg(`🚨 محاولة فاشلة:\nكود خطأ (${code}) أثناء ${currentMode}\nالمستخدم: ${currentUser}`);
+            return alert("الكود خطأ!");
+        }
+        closeModal();
+    }
+
+    // دوال المساعدة (Filter, Days, History) كما هي
     function filterData() {
         const nameVal = document.getElementById("searchName").value.toLowerCase();
         const typeVal = document.getElementById("searchType").value;
         const fromVal = document.getElementById("searchFrom").value;
         const toVal = document.getElementById("searchTo").value;
-
         document.querySelectorAll("#employeeTable tr").forEach(tr => {
             const rowName = tr.getAttribute("data-name");
-            const rowType = tr.getAttribute("data-type");
-            const rowStart = tr.getAttribute("data-start");
-            const rowEnd = tr.getAttribute("data-end");
-
             if (rowName) {
                 const matchN = rowName.includes(nameVal);
-                const matchT = typeVal === "" || rowType === typeVal;
-                
+                const matchT = typeVal === "" || tr.getAttribute("data-type") === typeVal;
                 let matchDate = true;
-                if (fromVal && toVal) {
-                    // التداخل المنطقي: تبدأ قبل نهاية البحث وتنتهي بعد بداية البحث
-                    matchDate = (rowStart <= toVal && rowEnd >= fromVal);
-                } else if (fromVal) {
-                    matchDate = (rowEnd >= fromVal);
-                } else if (toVal) {
-                    matchDate = (rowStart <= toVal);
-                }
-
+                const rs = tr.getAttribute("data-start"), re = tr.getAttribute("data-end");
+                if (fromVal && toVal) matchDate = (rs <= toVal && re >= fromVal);
+                else if (fromVal) matchDate = (re >= fromVal);
+                else if (toVal) matchDate = (rs <= toVal);
                 tr.style.display = (matchN && matchT && matchDate) ? "" : "none";
             }
         });
     }
 
-    // مسح الفلاتر دون الخروج
     function clearFilters() {
         document.getElementById("searchName").value = "";
         document.getElementById("searchType").value = "";
@@ -411,58 +504,10 @@
     }
 
     function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
-
-    async function executeAdd() {
-        const name = document.getElementById('empName').value.trim();
-        const type = document.getElementById('leaveType').value;
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        if (!name || !start || !end) return alert("يرجى إكمال البيانات");
-        const newEntry = { id: Date.now(), name, type, start, end };
-        try {
-            await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
-            sendTelegramMsg(`➕ تم إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم`);
-            document.getElementById('empName').value = "";
-            loadData();
-        } catch (error) { alert("خطأ في الحفظ"); }
-    }
-
-    async function executeDelete(key) {
-        const emp = allRecords.find(r => r.firebaseKey === key);
-        try {
-            await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'DELETE' });
-            sendTelegramMsg(`🗑️ تم حذف إجازة:\nالموظف: ${emp ? emp.name : 'غير معروف'}`);
-            loadData();
-        } catch (error) { alert("فشل الحذف"); }
-    }
-
-    function openModal(mode, key = null) {
-        currentMode = mode;
-        pendingDeleteKey = key;
-        document.getElementById('modalTitle').innerText = (mode === 'ADD') ? "كود الحفظ" : "كود الحذف";
-        document.getElementById('modalInput').value = "";
-        document.getElementById('customModal').style.display = 'flex';
-        document.getElementById('modalInput').focus();
-    }
-
-    function closeModal() { document.getElementById('customModal').style.display = 'none'; }
-
-    function handleModalConfirm() {
-        const code = document.getElementById('modalInput').value;
-        if (currentMode === 'ADD' && code === ADD_CODE) executeAdd();
-        else if (currentMode === 'DELETE' && code === DELETE_CODE) executeDelete(pendingDeleteKey);
-        else {
-            sendTelegramMsg(`🚨 محاولة فاشلة:\nاستخدام كود خطأ (${code}) أثناء ${currentMode === 'ADD' ? 'الإضافة' : 'الحذف'}`);
-            return alert("الكود خطأ!");
-        }
-        closeModal();
-    }
-
     function calculateDays(s, e) {
         const diff = Math.ceil(Math.abs(new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24)) + 1;
         return isNaN(diff) ? 0 : diff;
     }
-
     function getBadgeClass(type) {
         const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted' };
         return types[type] || 'other';
