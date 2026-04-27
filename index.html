@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الإجازات السحابي - Vo3b</title>
+    <title>نظام إدارة الإجازات السحابي - Vo3b | TT للأخرى فقط</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -12,6 +12,7 @@
             --info: #8e44ad;
             --warning: #f39c12;
             --bg: #f4f7f6;
+            --star-gold: #f1c40f;
         }
 
         body {
@@ -22,7 +23,6 @@
             direction: rtl;
         }
 
-        /* شاشة تسجيل الدخول */
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -69,10 +69,8 @@
         }
 
         #mainContent { display: none; }
-
         .container { max-width: 100%; margin: auto; }
 
-        /* النوافذ المنبثقة */
         #customModal, #historyModal {
             display: none;
             position: fixed;
@@ -111,29 +109,27 @@
         .confirm-btn { background: var(--success); color: white; }
         .cancel-btn { background: #eee; color: #333; }
 
-        /* شريط الأدوات */
         .inline-toolbar {
-            display: flex; gap: 4px; background: white; padding: 8px; border-radius: 8px; margin-bottom: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); align-items: center; overflow-x: auto;
+            display: flex; gap: 6px; background: white; padding: 10px; border-radius: 8px; margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); align-items: center; flex-wrap: wrap;
         }
 
         .inline-toolbar input, .inline-toolbar select {
-            padding: 8px 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; min-width: 80px;
+            padding: 8px 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; min-width: 80px;
         }
 
         .name-field { flex-grow: 2; min-width: 120px !important; }
-        label { font-size: 11px; color: #666; white-space: nowrap; margin: 0 2px; }
+        label { font-size: 12px; color: #555; white-space: nowrap; margin: 0 2px; font-weight: bold; }
 
-        button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap; }
+        button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
         .add-btn { background: var(--success); color: white; }
         .update-btn { background: var(--info); color: white; }
         .reset-btn { background: #95a5a6; color: white; }
 
-        /* الجدول */
         .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 5px; min-height: 200px; }
-        table { width: 100%; border-collapse: collapse; min-width: 750px; }
-        th { background: #f8f9fa; padding: 12px 10px; font-size: 12px; text-align: right; border-bottom: 2px solid #eee; color: #555; }
-        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: #f8f9fa; padding: 12px 8px; font-size: 12px; text-align: right; border-bottom: 2px solid #eee; color: #555; }
+        td { padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
 
         .badge { padding: 3px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; }
         .annual { background: #3498db; }
@@ -146,12 +142,35 @@
         .del-btn { background: var(--danger); color: white; padding: 5px 8px; border-radius: 4px; margin-right: 2px; }
         .edit-btn { background: var(--warning); color: white; padding: 5px 8px; border-radius: 4px; }
         
-        .sync-indicator { font-size: 11px; color: #27ae60; text-align: center; margin-bottom: 5px; font-weight: bold; }
+        .sync-indicator { font-size: 12px; color: #27ae60; text-align: center; margin-bottom: 5px; font-weight: bold; }
 
-        .emp-clickable { color: var(--info); cursor: pointer; text-decoration: underline; transition: 0.2s; }
+        .emp-clickable { color: var(--info); cursor: pointer; text-decoration: underline; transition: 0.2s; font-weight: bold; }
         .emp-clickable:hover { color: #2c3e50; }
 
         .total-row { background: #f9f9f9; font-weight: bold; color: var(--primary); border-top: 2px solid #ddd; }
+
+        .eligibility-badge {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .eligible { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .not-eligible { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .el-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+
+        .star-priority {
+            color: var(--star-gold);
+            font-size: 16px;
+            margin-right: 4px;
+            text-shadow: 0 0 2px rgba(0,0,0,0.2);
+            display: inline-block;
+            animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow { from { text-shadow: 0 0 5px #f1c40f; } to { text-shadow: 0 0 15px #e67e22; } }
+
+        .tt-cell { text-align: center; font-weight: bold; color: #8e44ad; }
 
         .copyright {
             text-align: center;
@@ -160,6 +179,16 @@
             margin-top: 15px;
             padding-bottom: 10px;
             font-family: Arial, sans-serif;
+        }
+
+        .eligibility-control {
+            background: #fef9e7;
+            padding: 5px 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid #f9e79f;
         }
     </style>
 </head>
@@ -199,6 +228,7 @@
                         <th>من</th>
                         <th>إلى</th>
                         <th>المدة</th>
+                        <th>نقاط TT</th>
                     </tr>
                 </thead>
                 <tbody id="historyTableBody"></tbody>
@@ -206,6 +236,7 @@
                     <tr class="total-row">
                         <td colspan="3">إجمالي الأيام المستهلكة:</td>
                         <td id="totalDaysSum">0 يوم</td>
+                        <td id="totalTtSum">0 نقطة</td>
                     </tr>
                 </tfoot>
             </table>
@@ -231,6 +262,13 @@
             <input type="date" id="searchFrom" onchange="filterData()">
             <label>إلى:</label>
             <input type="date" id="searchTo" onchange="filterData()">
+            
+            <div class="eligibility-control">
+                <label style="margin:0;">🧠 فترة الاستحقاق:</label>
+                <input type="number" id="eligMonths" value="6" min="1" max="24" style="width:50px; padding:5px; font-weight:bold;" onchange="renderTable(allRecords)">
+                <span style="font-size:11px;">شهر</span>
+            </div>
+
             <button class="reset-btn" title="مسح الفلاتر" onclick="clearFilters()">🔄</button>
         </div>
 
@@ -254,16 +292,18 @@
             <table>
                 <thead>
                     <tr>
-                        <th>الاسم</th>
+                        <th>الاسم / الأولوية</th>
                         <th>النوع</th>
                         <th>من</th>
                         <th>إلى</th>
                         <th>المدة</th>
+                        <th>نقاط TT</th>
+                        <th>حالة الاستحقاق</th>
                         <th>إجراءات</th>
                     </tr>
                 </thead>
                 <tbody id="employeeTable">
-                    <tr><td colspan="6" style="text-align:center; padding: 20px;">جاري جلب البيانات...</td></tr>
+                    <tr><td colspan="8" style="text-align:center; padding: 20px;">جاري جلب البيانات...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -336,23 +376,78 @@
         });
     }
 
+    function getLastLeaveDateForEmployee(empName) {
+        const today = new Date();
+        let lastDate = null;
+        allRecords.forEach(rec => {
+            if (rec.name === empName && rec.end) {
+                const endDate = new Date(rec.end);
+                if (endDate <= today) {
+                    if (!lastDate || endDate > lastDate) {
+                        lastDate = endDate;
+                    }
+                }
+            }
+        });
+        return lastDate;
+    }
+
+    function checkEligibility(name) {
+        const monthsRequired = parseInt(document.getElementById('eligMonths').value) || 6;
+        const lastDate = getLastLeaveDateForEmployee(name);
+        if (!lastDate) return { eligible: true, monthsDiff: 999, msg: "مستحق (أول مرة)" };
+        
+        const today = new Date();
+        const diffTime = Math.abs(today - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diffMonths = diffDays / 30.44; 
+
+        if (diffMonths >= monthsRequired) {
+            return { eligible: true, monthsDiff: diffMonths, msg: `مستحق (منذ ${Math.floor(diffMonths)} شهر)` };
+        } else {
+            const remaining = Math.ceil(monthsRequired - diffMonths);
+            return { eligible: false, monthsDiff: diffMonths, msg: `غير مستحق (مضى ${Math.floor(diffMonths)} شهر)` };
+        }
+    }
+
+    // حساب مجموع نقاط TT المتراكمة للموظف من الإجازات من نوع "أخرى" فقط
+    function calculatePriority(empName) {
+        const totalTt = allRecords
+            .filter(r => r.name === empName && r.type === 'أخرى')
+            .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
+        return totalTt;
+    }
+
     function renderTable(items) {
         const tbody = document.getElementById('employeeTable');
         tbody.innerHTML = "";
         if (items.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>لا توجد بيانات.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>لا توجد بيانات.</td></tr>";
             return;
         }
         items.sort((a, b) => b.id - a.id).forEach(emp => {
             const days = calculateDays(emp.start, emp.end);
             const tClass = getBadgeClass(emp.type);
+            const ttVal = emp.ttPoints || 0;
+            
+            const priority = calculatePriority(emp.name);
+            // إظهار نجمة إذا كان للموظف أي نقاط TT من إجازات "أخرى"
+            const starIcon = priority > 0 ? `<span class="star-priority" title="أولوية خروج (مجموع نقاط TT: ${priority})">⭐</span>` : '';
+            
+            const eligibility = checkEligibility(emp.name);
+            let eligibilityClass = 'eligible';
+            if (!eligibility.eligible) eligibilityClass = 'not-eligible';
+            else if (eligibility.monthsDiff < 7) eligibilityClass = 'el-warning'; 
+
             tbody.innerHTML += `
                 <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}" data-end="${emp.end}">
-                    <td><strong class="emp-clickable" onclick="viewHistory('${emp.name}')">${emp.name}</strong></td>
+                    <td><strong class="emp-clickable" onclick="viewHistory('${emp.name}')">${emp.name}</strong> ${starIcon}</td>
                     <td><span class="badge ${tClass}">${emp.type}</span></td>
                     <td>${emp.start}</td>
                     <td>${emp.end}</td>
                     <td><span class="days-tag">${days} يوم</span></td>
+                    <td class="tt-cell">${ttVal > 0 ? '⭐ '+ttVal : '-'}</td>
+                    <td><span class="eligibility-badge ${eligibilityClass}">${eligibility.msg}</span></td>
                     <td>
                         <button class="edit-btn" onclick="prepareEdit('${emp.firebaseKey}')">تعديل</button>
                         <button class="del-btn" onclick="openModal('DELETE', '${emp.firebaseKey}')">حذف</button>
@@ -399,10 +494,13 @@
 
         if (!name || !start || !end) return alert("يرجى إكمال البيانات");
 
-        const updatedData = { ...oldData, name, type, start, end };
+        // نقطة TT تلقائية = 1 فقط إذا كان النوع "أخرى"
+        const ttPoints = (type === 'أخرى') ? 1 : 0;
+
+        const updatedData = { ...oldData, name, type, start, end, ttPoints };
         try {
             await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(updatedData) });
-            sendTelegramMsg(`📝 تم تعديل إجازة:\nالموظف: ${name}\nبواسطة: ${currentUser}\n\nالسابق: (${oldData.start} إلى ${oldData.end})\nالجديد: (${start} إلى ${end})\nالنوع: ${type}`);
+            sendTelegramMsg(`📝 تم تعديل إجازة:\nالموظف: ${name}\nبواسطة: ${currentUser}\n\nالنوع: ${type} | نقاط TT: ${ttPoints}\nالفترة: (${start} إلى ${end})`);
             resetForm();
             loadData();
         } catch (error) { alert("خطأ في التحديث"); }
@@ -413,11 +511,16 @@
         const type = document.getElementById('leaveType').value;
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
+        
         if (!name || !start || !end) return alert("يرجى إكمال البيانات");
-        const newEntry = { id: Date.now(), name, type, start, end };
+        
+        // نقطة TT تلقائية = 1 فقط إذا كان النوع "أخرى"
+        const ttPoints = (type === 'أخرى') ? 1 : 0;
+
+        const newEntry = { id: Date.now(), name, type, start, end, ttPoints };
         try {
             await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
-            sendTelegramMsg(`➕ إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم\nبواسطة: ${currentUser}`);
+            sendTelegramMsg(`➕ إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم\nنقاط TT: ${ttPoints}\nبواسطة: ${currentUser}`);
             resetForm();
             loadData();
         } catch (error) { alert("خطأ في الحفظ"); }
@@ -458,7 +561,6 @@
         closeModal();
     }
 
-    // دوال المساعدة (Filter, Days, History) كما هي
     function filterData() {
         const nameVal = document.getElementById("searchName").value.toLowerCase();
         const typeVal = document.getElementById("searchType").value;
@@ -490,16 +592,24 @@
     function viewHistory(name) {
         const historyBody = document.getElementById('historyTableBody');
         const totalDaysEl = document.getElementById('totalDaysSum');
+        const totalTtEl = document.getElementById('totalTtSum');
         historyBody.innerHTML = "";
         document.getElementById('histName').innerText = `سجل إجازات: ${name}`;
         const filtered = allRecords.filter(r => r.name === name);
-        let total = 0;
+        let totalDays = 0;
+        let totalTt = 0;
         filtered.forEach(rec => {
             const d = calculateDays(rec.start, rec.end);
-            total += d;
-            historyBody.innerHTML += `<tr><td>${rec.type}</td><td>${rec.start}</td><td>${rec.end}</td><td>${d} يوم</td></tr>`;
+            const tt = rec.ttPoints || 0;
+            totalDays += d;
+            totalTt += tt;
+            historyBody.innerHTML += `<tr>
+                <td>${rec.type}</td><td>${rec.start}</td><td>${rec.end}</td><td>${d} يوم</td>
+                <td style="text-align:center;">${tt > 0 ? '⭐ '+tt : '-'}</td>
+                </tr>`;
         });
-        totalDaysEl.innerText = `${total} يوم`;
+        totalDaysEl.innerText = `${totalDays} يوم`;
+        totalTtEl.innerText = `⭐ ${totalTt} نقطة`;
         document.getElementById('historyModal').style.display = 'flex';
     }
 
@@ -509,7 +619,7 @@
         return isNaN(diff) ? 0 : diff;
     }
     function getBadgeClass(type) {
-        const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted' };
+        const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted', 'أخرى': 'other' };
         return types[type] || 'other';
     }
 </script>
