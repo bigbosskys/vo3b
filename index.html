@@ -158,7 +158,7 @@
         }
         .eligible { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .not-eligible { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .el-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .neutral { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
 
         .star-priority {
             color: var(--star-gold);
@@ -264,7 +264,7 @@
             <input type="date" id="searchTo" onchange="filterData()">
             
             <div class="eligibility-control">
-                <label style="margin:0;">🧠 فترة الاستحقاق:</label>
+                <label style="margin:0;">🧠 فترة الاستحقاق الأولية:</label>
                 <input type="number" id="eligMonths" value="6" min="1" max="24" style="width:50px; padding:5px; font-weight:bold;" onchange="renderTable(allRecords)">
                 <span style="font-size:11px;">شهر</span>
             </div>
@@ -392,35 +392,85 @@
         return lastDate;
     }
 
-    function checkEligibility(name) {
+    // النظام الذكي: إرجاع لون وحالة فقط دون أرقام
+    function getSmartEligibility(empName) {
         const monthsRequired = parseInt(document.getElementById('eligMonths').value) || 6;
-        const lastDate = getLastLeaveDateForEmployee(name);
-        if (!lastDate) return { eligible: true, monthsDiff: 999, msg: "مستحق (أول مرة)" };
-        
         const today = new Date();
-        const diffTime = Math.abs(today - lastDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const diffMonths = diffDays / 30.44; 
+        const currentYear = today.getFullYear();
 
-        if (diffMonths >= monthsRequired) {
-            return { eligible: true, monthsDiff: diffMonths, msg: `مستحق (منذ ${Math.floor(diffMonths)} شهر)` };
-        } else {
-            const remaining = Math.ceil(monthsRequired - diffMonths);
-            return { eligible: false, monthsDiff: diffMonths, msg: `غير مستحق (مضى ${Math.floor(diffMonths)} شهر)` };
+        // العامل الأساسي: الأشهر منذ آخر إجازة
+        const lastDate = getLastLeaveDateForEmployee(empName);
+        let monthsSinceLast = 999; // لو لم توجد إجازة سابقة
+        if (lastDate) {
+            const diffTime = Math.abs(today - lastDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            monthsSinceLast = diffDays / 30.44;
         }
-    }
 
-    // حساب مجموع نقاط TT المتراكمة للموظف من الإجازات من نوع "أخرى" فقط
-    function calculatePriority(empName) {
-        const totalTt = allRecords
+        // العامل الثاني: نقاط TT
+        const totalTT = allRecords
             .filter(r => r.name === empName && r.type === 'أخرى')
             .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
-        return totalTt;
+
+        // العامل الثالث: عدد الإجازات في السنة الحالية
+        const leavesThisYear = allRecords.filter(r => {
+            if (r.name !== empName) return false;
+            const startYear = new Date(r.start).getFullYear();
+            const endYear = new Date(r.end).getFullYear();
+            return startYear === currentYear || endYear === currentYear;
+        }).length;
+
+        // تحديد اللون الأساسي بناءً على المدة منذ آخر إجازة
+        let baseColor;
+        if (monthsSinceLast >= monthsRequired) baseColor = 'green';
+        else if (monthsSinceLast >= monthsRequired * 0.5) baseColor = 'yellow';
+        else baseColor = 'red';
+
+        // تعديلات ذكية
+        // نقاط TT عالية (أكثر من 9) ترفع اللون درجة
+        if (totalTT > 9) {
+            if (baseColor === 'red') baseColor = 'yellow';
+            else if (baseColor === 'yellow') baseColor = 'green';
+        }
+        // كثرة الإجازات هذا العام تخفض اللون درجة (أكثر من 5 إجازات)
+        if (leavesThisYear > 5) {
+            if (baseColor === 'green') baseColor = 'yellow';
+            else if (baseColor === 'yellow') baseColor = 'red';
+        }
+        // إذا كان الموظف جديداً (لا توجد إجازات سابقة) نحتفظ بالأخضر
+        if (!lastDate) baseColor = 'green';
+
+        // تحويل اللون إلى رسالة بدون أرقام
+        let statusText, cssClass;
+        switch (baseColor) {
+            case 'green':
+                statusText = 'مستحق';
+                cssClass = 'eligible';
+                break;
+            case 'yellow':
+                statusText = 'محايد';
+                cssClass = 'neutral';
+                break;
+            default:
+                statusText = 'غير مستحق';
+                cssClass = 'not-eligible';
+        }
+
+        return { text: statusText, class: cssClass };
     }
 
     function renderTable(items) {
         const tbody = document.getElementById('employeeTable');
         tbody.innerHTML = "";
+
+        // تجميع حالة الاستحقاق لكل موظف (مرة واحدة)
+        const eligibilityMap = new Map();
+        items.forEach(emp => {
+            if (!eligibilityMap.has(emp.name)) {
+                eligibilityMap.set(emp.name, getSmartEligibility(emp.name));
+            }
+        });
+
         if (items.length === 0) {
             tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>لا توجد بيانات.</td></tr>";
             return;
@@ -431,13 +481,9 @@
             const ttVal = emp.ttPoints || 0;
             
             const priority = calculatePriority(emp.name);
-            // إظهار نجمة إذا كان للموظف أي نقاط TT من إجازات "أخرى"
-            const starIcon = priority > 0 ? `<span class="star-priority" title="أولوية خروج (مجموع نقاط TT: ${priority})">⭐</span>` : '';
+            const starIcon = priority > 0 ? `<span class="star-priority" title="أولوية خروج (نقاط TT: ${priority})">⭐</span>` : '';
             
-            const eligibility = checkEligibility(emp.name);
-            let eligibilityClass = 'eligible';
-            if (!eligibility.eligible) eligibilityClass = 'not-eligible';
-            else if (eligibility.monthsDiff < 7) eligibilityClass = 'el-warning'; 
+            const eligibility = eligibilityMap.get(emp.name);
 
             tbody.innerHTML += `
                 <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}" data-end="${emp.end}">
@@ -447,7 +493,7 @@
                     <td>${emp.end}</td>
                     <td><span class="days-tag">${days} يوم</span></td>
                     <td class="tt-cell">${ttVal > 0 ? '⭐ '+ttVal : '-'}</td>
-                    <td><span class="eligibility-badge ${eligibilityClass}">${eligibility.msg}</span></td>
+                    <td><span class="eligibility-badge ${eligibility.class}">${eligibility.text}</span></td>
                     <td>
                         <button class="edit-btn" onclick="prepareEdit('${emp.firebaseKey}')">تعديل</button>
                         <button class="del-btn" onclick="openModal('DELETE', '${emp.firebaseKey}')">حذف</button>
@@ -494,7 +540,6 @@
 
         if (!name || !start || !end) return alert("يرجى إكمال البيانات");
 
-        // نقطة TT تلقائية = 1 فقط إذا كان النوع "أخرى"
         const ttPoints = (type === 'أخرى') ? 1 : 0;
 
         const updatedData = { ...oldData, name, type, start, end, ttPoints };
@@ -514,7 +559,6 @@
         
         if (!name || !start || !end) return alert("يرجى إكمال البيانات");
         
-        // نقطة TT تلقائية = 1 فقط إذا كان النوع "أخرى"
         const ttPoints = (type === 'أخرى') ? 1 : 0;
 
         const newEntry = { id: Date.now(), name, type, start, end, ttPoints };
@@ -621,6 +665,11 @@
     function getBadgeClass(type) {
         const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted', 'أخرى': 'other' };
         return types[type] || 'other';
+    }
+    function calculatePriority(empName) {
+        return allRecords
+            .filter(r => r.name === empName && r.type === 'أخرى')
+            .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
     }
 </script>
 </body>
