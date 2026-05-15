@@ -25,11 +25,15 @@
 
         #loginOverlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: var(--primary);
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
             padding-top: 15vh;
             z-index: 2000;
         }
@@ -38,13 +42,18 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             width: 90%;
             max-width: 350px;
             text-align: center;
+            margin-bottom: 20px;
         }
 
-        .login-box h2 { margin-bottom: 20px; color: var(--primary); }
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
         .login-box input {
             width: 100%;
             padding: 12px;
@@ -68,20 +77,50 @@
             margin-top: 10px;
         }
 
-        #mainContent { display: none; }
-        .container { max-width: 100%; margin: auto; }
+        .priority-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 26px;
+            margin-top: 5px;
+            width: auto;
+            min-width: 200px;
+        }
 
-        #customModal, #historyModal {
+        #mainContent {
+            display: none;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: auto;
+        }
+
+        #customModal,
+        #historyModal,
+        #priorityModal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
-        .modal-content, .history-content {
+        #priorityModal {
+            z-index: 3000;
+        }
+
+        .modal-content,
+        .history-content {
             background: white;
             padding: 20px;
             border-radius: 12px;
@@ -90,9 +129,31 @@
             text-align: center;
         }
 
-        .history-content { max-width: 600px; max-height: 80vh; overflow-y: auto; text-align: right; }
+        .history-content {
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: right;
+        }
 
-        .modal-content h3, .history-content h3 { margin-top: 0; color: var(--primary); }
+        .priority-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 700px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3,
+        .history-content h3,
+        .priority-content h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
         .modal-content input {
             width: 80%;
             padding: 12px;
@@ -104,50 +165,217 @@
             letter-spacing: 4px;
         }
 
-        .modal-btns { display: flex; gap: 10px; }
-        .modal-btns button { flex: 1; padding: 10px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; }
-        .confirm-btn { background: var(--success); color: white; }
-        .cancel-btn { background: #eee; color: #333; }
+        .pin-input {
+            width: 70%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 20px;
+            letter-spacing: 4px;
+        }
+
+        .pin-btn {
+            padding: 10px 20px;
+            background: var(--info);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btns button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+
+        .confirm-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #eee;
+            color: #333;
+        }
 
         .inline-toolbar {
-            display: flex; gap: 6px; background: white; padding: 10px; border-radius: 8px; margin-bottom: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); align-items: center; flex-wrap: wrap;
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        .inline-toolbar input, .inline-toolbar select {
-            padding: 8px 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; min-width: 80px;
+        .inline-toolbar input,
+        .inline-toolbar select {
+            padding: 8px 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 80px;
         }
 
-        .name-field { flex-grow: 2; min-width: 120px !important; }
-        label { font-size: 12px; color: #555; white-space: nowrap; margin: 0 2px; font-weight: bold; }
+        .name-field {
+            flex-grow: 2;
+            min-width: 120px !important;
+        }
 
-        button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
-        .add-btn { background: var(--success); color: white; }
-        .update-btn { background: var(--info); color: white; }
-        .reset-btn { background: #95a5a6; color: white; }
+        label {
+            font-size: 12px;
+            color: #555;
+            white-space: nowrap;
+            margin: 0 2px;
+            font-weight: bold;
+        }
 
-        .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 5px; min-height: 200px; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { background: #f8f9fa; padding: 12px 8px; font-size: 12px; text-align: right; border-bottom: 2px solid #eee; color: #555; }
-        td { padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            white-space: nowrap;
+        }
 
-        .badge { padding: 3px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; }
-        .annual { background: #3498db; }
-        .emergency { background: #e67e22; }
-        .sick { background: #e74c3c; }
-        .permitted { background: #8e44ad; }
-        .other { background: #95a5a6; }
-        
-        .days-tag { background: #f1c40f; color: black; padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 11px; }
-        .del-btn { background: var(--danger); color: white; padding: 5px 8px; border-radius: 4px; margin-right: 2px; }
-        .edit-btn { background: var(--warning); color: white; padding: 5px 8px; border-radius: 4px; }
-        
-        .sync-indicator { font-size: 12px; color: #27ae60; text-align: center; margin-bottom: 5px; font-weight: bold; }
+        .add-btn {
+            background: var(--success);
+            color: white;
+        }
 
-        .emp-clickable { color: var(--info); cursor: pointer; text-decoration: underline; transition: 0.2s; font-weight: bold; }
-        .emp-clickable:hover { color: #2c3e50; }
+        .update-btn {
+            background: var(--info);
+            color: white;
+        }
 
-        .total-row { background: #f9f9f9; font-weight: bold; color: var(--primary); border-top: 2px solid #ddd; }
+        .reset-btn {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow-x: auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 5px;
+            min-height: 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 12px 8px;
+            font-size: 12px;
+            text-align: right;
+            border-bottom: 2px solid #eee;
+            color: #555;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .annual {
+            background: #3498db;
+        }
+        .emergency {
+            background: #e67e22;
+        }
+        .sick {
+            background: #e74c3c;
+        }
+        .permitted {
+            background: #8e44ad;
+        }
+        .other {
+            background: #95a5a6;
+        }
+
+        .days-tag {
+            background: #f1c40f;
+            color: black;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .del-btn {
+            background: var(--danger);
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            margin-right: 2px;
+        }
+
+        .edit-btn {
+            background: var(--warning);
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+        }
+
+        .sync-indicator {
+            font-size: 12px;
+            color: #27ae60;
+            text-align: center;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .emp-clickable {
+            color: var(--info);
+            cursor: pointer;
+            text-decoration: underline;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+
+        .emp-clickable:hover {
+            color: #2c3e50;
+        }
+
+        .total-row {
+            background: #f9f9f9;
+            font-weight: bold;
+            color: var(--primary);
+            border-top: 2px solid #ddd;
+        }
 
         .eligibility-badge {
             padding: 2px 10px;
@@ -156,21 +384,48 @@
             font-weight: bold;
             display: inline-block;
         }
-        .eligible { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .not-eligible { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .neutral { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+
+        .eligible {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .not-eligible {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .neutral {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
 
         .star-priority {
             color: var(--star-gold);
             font-size: 16px;
             margin-right: 4px;
-            text-shadow: 0 0 2px rgba(0,0,0,0.2);
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
             display: inline-block;
             animation: glow 1.5s infinite alternate;
         }
-        @keyframes glow { from { text-shadow: 0 0 5px #f1c40f; } to { text-shadow: 0 0 15px #e67e22; } }
 
-        .tt-cell { text-align: center; font-weight: bold; color: #8e44ad; }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #f1c40f;
+            }
+            to {
+                text-shadow: 0 0 15px #e67e22;
+            }
+        }
+
+        .tt-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #8e44ad;
+        }
 
         .copyright {
             text-align: center;
@@ -190,302 +445,359 @@
             gap: 4px;
             border: 1px solid #f9e79f;
         }
+
+        .priority-btn-wrapper {
+            width: 100%;
+            text-align: center;
+        }
+
+        .pin-error {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .score-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            margin: 2px 0;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .score-high {
+            background: #27ae60;
+        }
+        .score-med {
+            background: #f39c12;
+        }
+        .score-low {
+            background: #e74c3c;
+        }
+
+        .priority-reason {
+            font-size: 10px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+            display: inline-block;
+        }
+
+        .score-badge {
+            font-weight: bold;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
 
-<div id="loginOverlay">
-    <div class="login-box">
-        <h2>تسجيل الدخول</h2>
-        <input type="text" id="loginUser" placeholder="اسم المستخدم" autofocus>
-        <input type="password" id="loginPass" placeholder="كلمة المرور">
-        <button class="login-btn" onclick="checkLogin()">دخول</button>
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2>تسجيل الدخول</h2>
+            <input type="text" id="loginUser" placeholder="اسم المستخدم" autofocus>
+            <input type="password" id="loginPass" placeholder="كلمة المرور">
+            <button class="login-btn" onclick="checkLogin()">دخول</button>
+        </div>
+        <div class="priority-btn-wrapper">
+            <button class="priority-btn" onclick="showPriorityList()">🔝 الأولوية</button>
+        </div>
         <div class="copyright">
             © 2026 Vo3b. All Rights Reserved.
         </div>
     </div>
-</div>
 
-<div id="mainContent">
-    <div id="customModal">
-        <div class="modal-content">
-            <h3 id="modalTitle">التحقق من الهوية</h3>
-            <input type="password" id="modalInput" placeholder="****">
-            <div class="modal-btns">
-                <button class="confirm-btn" onclick="handleModalConfirm()">تأكيد</button>
-                <button class="cancel-btn" onclick="closeModal()">إلغاء</button>
+    <!-- نافذة الأولوية -->
+    <div id="priorityModal">
+        <div class="priority-content" id="priorityModalContent">
+            <!-- يعبأ ديناميكياً -->
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <div id="customModal">
+            <div class="modal-content">
+                <h3 id="modalTitle">التحقق من الهوية</h3>
+                <input type="password" id="modalInput" placeholder="****">
+                <div class="modal-btns">
+                    <button class="confirm-btn" onclick="handleModalConfirm()">تأكيد</button>
+                    <button class="cancel-btn" onclick="closeModal()">إلغاء</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="historyModal">
+            <div class="history-content">
+                <h3 id="histName">سجل إجازات الموظف</h3>
+                <table style="min-width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>النوع</th>
+                            <th>من</th>
+                            <th>إلى</th>
+                            <th>المدة</th>
+                            <th>نقاط TT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody"></tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="3">إجمالي الأيام المستهلكة:</td>
+                            <td id="totalDaysSum">0 يوم</td>
+                            <td id="totalTtSum">0 نقطة</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br>
+                <button class="cancel-btn" onclick="closeHistory()" style="width:100%">إغلاق السجل</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="sync-indicator" id="syncStatus">● متصل بالسحابة (Vo3b)</div>
+
+            <div class="inline-toolbar">
+                <input type="text" id="searchName" class="name-field" placeholder="🔍 ابحث بالاسم..." onkeyup="filterData()">
+                <select id="searchType" onchange="filterData()">
+                    <option value="">كل الأنواع</option>
+                    <option value="سنوية">سنوية</option>
+                    <option value="عرضية">عرضية</option>
+                    <option value="مرضية">مرضية</option>
+                    <option value="مرخوص">مرخوص</option>
+                    <option value="أخرى">أخرى</option>
+                </select>
+                <label>من:</label>
+                <input type="date" id="searchFrom" onchange="filterData()">
+                <label>إلى:</label>
+                <input type="date" id="searchTo" onchange="filterData()">
+
+                <div class="eligibility-control">
+                    <label style="margin:0;">🧠 فترة الاستحقاق الأولية:</label>
+                    <input type="number" id="eligMonths" value="6" min="1" max="24" style="width:50px; padding:5px; font-weight:bold;" onchange="renderTable(allRecords)">
+                    <span style="font-size:11px;">شهر</span>
+                </div>
+
+                <button class="reset-btn" title="مسح الفلاتر" onclick="clearFilters()">🔄</button>
+            </div>
+
+            <div class="inline-toolbar" style="border-right: 5px solid var(--success);">
+                <input type="text" id="empName" class="name-field" placeholder="اسم الموظف" list="employeesList">
+                <datalist id="employeesList"></datalist>
+                <select id="leaveType">
+                    <option value="سنوية">سنوية</option>
+                    <option value="عرضية">عرضية</option>
+                    <option value="مرضية">مرضية</option>
+                    <option value="مرخوص">مرخوص</option>
+                    <option value="أخرى">أخرى</option>
+                </select>
+                <input type="date" id="startDate">
+                <input type="date" id="endDate">
+                <button id="mainActionBtn" class="add-btn" onclick="openModal('ADD')">➕ حفظ سحابي</button>
+                <button id="cancelEditBtn" class="cancel-btn" onclick="resetForm()" style="display:none;">إلغاء</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم / الأولوية</th>
+                            <th>النوع</th>
+                            <th>من</th>
+                            <th>إلى</th>
+                            <th>المدة</th>
+                            <th>نقاط TT</th>
+                            <th>حالة الاستحقاق</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTable">
+                        <tr><td colspan="8" style="text-align:center; padding: 20px;">جاري جلب البيانات...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="copyright">
+                © 2026 Vo3b. All Rights Reserved.
             </div>
         </div>
     </div>
 
-    <div id="historyModal">
-        <div class="history-content">
-            <h3 id="histName">سجل إجازات الموظف</h3>
-            <table style="min-width: 100%;">
-                <thead>
-                    <tr>
-                        <th>النوع</th>
-                        <th>من</th>
-                        <th>إلى</th>
-                        <th>المدة</th>
-                        <th>نقاط TT</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTableBody"></tbody>
-                <tfoot>
-                    <tr class="total-row">
-                        <td colspan="3">إجمالي الأيام المستهلكة:</td>
-                        <td id="totalDaysSum">0 يوم</td>
-                        <td id="totalTtSum">0 نقطة</td>
-                    </tr>
-                </tfoot>
-            </table>
-            <br>
-            <button class="cancel-btn" onclick="closeHistory()" style="width:100%">إغلاق السجل</button>
-        </div>
-    </div>
+    <script>
+        const ACCOUNTS = { "admin": "admin929210", "bigbosskys": "bigbosskys84" };
+        const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
+        const DB_JSON_URL = `${DB_BASE_URL}.json`;
+        const DELETE_CODE = "91222";
+        const ADD_CODE = "90009";
+        const BOT_TOKEN = "8409072076:AAGn9aPBY1Y6M9HqPykXqe62txwczkF0pI0";
+        const CHAT_ID = "56826977";
 
-    <div class="container">
-        <div class="sync-indicator" id="syncStatus">● متصل بالسحابة (Vo3b)</div>
+        let currentMode = "";
+        let selectedKey = null;
+        let allRecords = [];
+        let currentUser = "";
 
-        <div class="inline-toolbar">
-            <input type="text" id="searchName" class="name-field" placeholder="🔍 ابحث بالاسم..." onkeyup="filterData()">
-            <select id="searchType" onchange="filterData()">
-                <option value="">كل الأنواع</option>
-                <option value="سنوية">سنوية</option>
-                <option value="عرضية">عرضية</option>
-                <option value="مرضية">مرضية</option>
-                <option value="مرخوص">مرخوص</option>
-                <option value="أخرى">أخرى</option>
-            </select>
-            <label>من:</label>
-            <input type="date" id="searchFrom" onchange="filterData()">
-            <label>إلى:</label>
-            <input type="date" id="searchTo" onchange="filterData()">
-            
-            <div class="eligibility-control">
-                <label style="margin:0;">🧠 فترة الاستحقاق الأولية:</label>
-                <input type="number" id="eligMonths" value="6" min="1" max="24" style="width:50px; padding:5px; font-weight:bold;" onchange="renderTable(allRecords)">
-                <span style="font-size:11px;">شهر</span>
-            </div>
+        const CORRECT_PIN_ENCODED = "MDE2MjA="; // 01620
 
-            <button class="reset-btn" title="مسح الفلاتر" onclick="clearFilters()">🔄</button>
-        </div>
-
-        <div class="inline-toolbar" style="border-right: 5px solid var(--success);">
-            <input type="text" id="empName" class="name-field" placeholder="اسم الموظف" list="employeesList">
-            <datalist id="employeesList"></datalist>
-            <select id="leaveType">
-                <option value="سنوية">سنوية</option>
-                <option value="عرضية">عرضية</option>
-                <option value="مرضية">مرضية</option>
-                <option value="مرخوص">مرخوص</option>
-                <option value="أخرى">أخرى</option>
-            </select>
-            <input type="date" id="startDate">
-            <input type="date" id="endDate">
-            <button id="mainActionBtn" class="add-btn" onclick="openModal('ADD')">➕ حفظ سحابي</button>
-            <button id="cancelEditBtn" class="cancel-btn" onclick="resetForm()" style="display:none;">إلغاء</button>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>الاسم / الأولوية</th>
-                        <th>النوع</th>
-                        <th>من</th>
-                        <th>إلى</th>
-                        <th>المدة</th>
-                        <th>نقاط TT</th>
-                        <th>حالة الاستحقاق</th>
-                        <th>إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="employeeTable">
-                    <tr><td colspan="8" style="text-align:center; padding: 20px;">جاري جلب البيانات...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="copyright">
-            © 2026 Vo3b. All Rights Reserved.
-        </div>
-    </div>
-</div>
-
-<script>
-    const ACCOUNTS = { "admin": "admin929210", "bigbosskys": "bigbosskys84" };
-    const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
-    const DB_JSON_URL = `${DB_BASE_URL}.json`;
-    const DELETE_CODE = "91222"; 
-    const ADD_CODE = "90009";
-    const BOT_TOKEN = "8409072076:AAGn9aPBY1Y6M9HqPykXqe62txwczkF0pI0";
-    const CHAT_ID = "56826977";
-
-    let currentMode = ""; 
-    let selectedKey = null;
-    let allRecords = [];
-    let currentUser = "";
-
-    async function sendTelegramMsg(text) {
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
-        try { await fetch(url); } catch (e) { console.error("Telegram Error"); }
-    }
-
-    function checkLogin() {
-        const u = document.getElementById('loginUser').value;
-        const p = document.getElementById('loginPass').value;
-        if (ACCOUNTS[u] && ACCOUNTS[u] === p) {
-            currentUser = u;
-            if (u !== "admin") sendTelegramMsg(`🔓 دخول جديد:\nالمستخدم: ${u}\nالوقت: ${new Date().toLocaleString('ar-SA')}`);
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            loadData();
-        } else {
-            sendTelegramMsg(`⚠️ محاولة دخول فاشلة:\nالاسم: ${u}\nالباسورد: ${p}`);
-            alert("خطأ في بيانات الدخول!");
+        async function sendTelegramMsg(text) {
+            const url =
+                `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
+            try { await fetch(url); } catch (e) { console.error("Telegram Error"); }
         }
-    }
 
-    async function loadData() {
-        const status = document.getElementById('syncStatus');
-        status.innerText = "⏳ جاري التحديث...";
-        try {
-            const response = await fetch(DB_JSON_URL);
-            const data = await response.json();
-            allRecords = data ? Object.keys(data).map(key => ({ ...data[key], firebaseKey: key })) : [];
-            updateEmployeeDatalist(); 
-            renderTable(allRecords);
-            status.innerText = "● متصل بالسحابة (Vo3b)";
-            status.style.color = "#27ae60";
-        } catch (error) {
-            status.innerText = "❌ خطأ في الاتصال";
-            status.style.color = "red";
+        function checkLogin() {
+            const u = document.getElementById('loginUser').value;
+            const p = document.getElementById('loginPass').value;
+            if (ACCOUNTS[u] && ACCOUNTS[u] === p) {
+                currentUser = u;
+                if (u !== "admin") sendTelegramMsg(
+                    `🔓 دخول جديد:\nالمستخدم: ${u}\nالوقت: ${new Date().toLocaleString('ar-SA')}`);
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                loadData();
+            } else {
+                sendTelegramMsg(`⚠️ محاولة دخول فاشلة:\nالاسم: ${u}\nالباسورد: ${p}`);
+                alert("خطأ في بيانات الدخول!");
+            }
         }
-    }
 
-    function updateEmployeeDatalist() {
-        const list = document.getElementById('employeesList');
-        const uniqueNames = [...new Set(allRecords.map(item => item.name))];
-        list.innerHTML = "";
-        uniqueNames.forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            list.appendChild(option);
-        });
-    }
+        async function loadData() {
+            const status = document.getElementById('syncStatus');
+            status.innerText = "⏳ جاري التحديث...";
+            try {
+                const response = await fetch(DB_JSON_URL);
+                const data = await response.json();
+                allRecords = data ? Object.keys(data).map(key => ({ ...data[key], firebaseKey: key })) : [];
+                updateEmployeeDatalist();
+                renderTable(allRecords);
+                status.innerText = "● متصل بالسحابة (Vo3b)";
+                status.style.color = "#27ae60";
+            } catch (error) {
+                status.innerText = "❌ خطأ في الاتصال";
+                status.style.color = "red";
+            }
+        }
 
-    function getLastLeaveDateForEmployee(empName) {
-        const today = new Date();
-        let lastDate = null;
-        allRecords.forEach(rec => {
-            if (rec.name === empName && rec.end) {
-                const endDate = new Date(rec.end);
-                if (endDate <= today) {
-                    if (!lastDate || endDate > lastDate) {
-                        lastDate = endDate;
+        function updateEmployeeDatalist() {
+            const list = document.getElementById('employeesList');
+            const uniqueNames = [...new Set(allRecords.map(item => item.name))];
+            list.innerHTML = "";
+            uniqueNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                list.appendChild(option);
+            });
+        }
+
+        function getLastLeaveDateForEmployee(empName) {
+            const today = new Date();
+            let lastDate = null;
+            allRecords.forEach(rec => {
+                if (rec.name === empName && rec.end) {
+                    const endDate = new Date(rec.end);
+                    if (endDate <= today) {
+                        if (!lastDate || endDate > lastDate) {
+                            lastDate = endDate;
+                        }
                     }
                 }
+            });
+            return lastDate;
+        }
+
+        function getSmartEligibility(empName) {
+            const monthsRequired = parseInt(document.getElementById('eligMonths').value) || 6;
+            const today = new Date();
+            const currentYear = today.getFullYear();
+
+            const lastDate = getLastLeaveDateForEmployee(empName);
+            let monthsSinceLast = 999;
+            if (lastDate) {
+                const diffTime = Math.abs(today - lastDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                monthsSinceLast = diffDays / 30.44;
             }
-        });
-        return lastDate;
-    }
 
-    // النظام الذكي: إرجاع لون وحالة فقط دون أرقام
-    function getSmartEligibility(empName) {
-        const monthsRequired = parseInt(document.getElementById('eligMonths').value) || 6;
-        const today = new Date();
-        const currentYear = today.getFullYear();
+            const totalTT = allRecords
+                .filter(r => r.name === empName && r.type === 'أخرى')
+                .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
 
-        // العامل الأساسي: الأشهر منذ آخر إجازة
-        const lastDate = getLastLeaveDateForEmployee(empName);
-        let monthsSinceLast = 999; // لو لم توجد إجازة سابقة
-        if (lastDate) {
-            const diffTime = Math.abs(today - lastDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            monthsSinceLast = diffDays / 30.44;
-        }
+            const leavesThisYear = allRecords.filter(r => {
+                if (r.name !== empName) return false;
+                const startYear = new Date(r.start).getFullYear();
+                const endYear = new Date(r.end).getFullYear();
+                return startYear === currentYear || endYear === currentYear;
+            }).length;
 
-        // العامل الثاني: نقاط TT
-        const totalTT = allRecords
-            .filter(r => r.name === empName && r.type === 'أخرى')
-            .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
+            let baseColor;
+            if (monthsSinceLast >= monthsRequired) baseColor = 'green';
+            else if (monthsSinceLast >= monthsRequired * 0.5) baseColor = 'yellow';
+            else baseColor = 'red';
 
-        // العامل الثالث: عدد الإجازات في السنة الحالية
-        const leavesThisYear = allRecords.filter(r => {
-            if (r.name !== empName) return false;
-            const startYear = new Date(r.start).getFullYear();
-            const endYear = new Date(r.end).getFullYear();
-            return startYear === currentYear || endYear === currentYear;
-        }).length;
-
-        // تحديد اللون الأساسي بناءً على المدة منذ آخر إجازة
-        let baseColor;
-        if (monthsSinceLast >= monthsRequired) baseColor = 'green';
-        else if (monthsSinceLast >= monthsRequired * 0.5) baseColor = 'yellow';
-        else baseColor = 'red';
-
-        // تعديلات ذكية
-        // نقاط TT عالية (أكثر من 9) ترفع اللون درجة
-        if (totalTT > 9) {
-            if (baseColor === 'red') baseColor = 'yellow';
-            else if (baseColor === 'yellow') baseColor = 'green';
-        }
-        // كثرة الإجازات هذا العام تخفض اللون درجة (أكثر من 5 إجازات)
-        if (leavesThisYear > 5) {
-            if (baseColor === 'green') baseColor = 'yellow';
-            else if (baseColor === 'yellow') baseColor = 'red';
-        }
-        // إذا كان الموظف جديداً (لا توجد إجازات سابقة) نحتفظ بالأخضر
-        if (!lastDate) baseColor = 'green';
-
-        // تحويل اللون إلى رسالة بدون أرقام
-        let statusText, cssClass;
-        switch (baseColor) {
-            case 'green':
-                statusText = 'مستحق';
-                cssClass = 'eligible';
-                break;
-            case 'yellow':
-                statusText = 'محايد';
-                cssClass = 'neutral';
-                break;
-            default:
-                statusText = 'غير مستحق';
-                cssClass = 'not-eligible';
-        }
-
-        return { text: statusText, class: cssClass };
-    }
-
-    function renderTable(items) {
-        const tbody = document.getElementById('employeeTable');
-        tbody.innerHTML = "";
-
-        // تجميع حالة الاستحقاق لكل موظف (مرة واحدة)
-        const eligibilityMap = new Map();
-        items.forEach(emp => {
-            if (!eligibilityMap.has(emp.name)) {
-                eligibilityMap.set(emp.name, getSmartEligibility(emp.name));
+            if (totalTT > 9) {
+                if (baseColor === 'red') baseColor = 'yellow';
+                else if (baseColor === 'yellow') baseColor = 'green';
             }
-        });
+            if (leavesThisYear > 5) {
+                if (baseColor === 'green') baseColor = 'yellow';
+                else if (baseColor === 'yellow') baseColor = 'red';
+            }
+            if (!lastDate) baseColor = 'green';
 
-        if (items.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>لا توجد بيانات.</td></tr>";
-            return;
+            let statusText, cssClass;
+            switch (baseColor) {
+                case 'green':
+                    statusText = 'مستحق';
+                    cssClass = 'eligible';
+                    break;
+                case 'yellow':
+                    statusText = 'محايد';
+                    cssClass = 'neutral';
+                    break;
+                default:
+                    statusText = 'غير مستحق';
+                    cssClass = 'not-eligible';
+            }
+
+            return { text: statusText, class: cssClass };
         }
-        items.sort((a, b) => b.id - a.id).forEach(emp => {
-            const days = calculateDays(emp.start, emp.end);
-            const tClass = getBadgeClass(emp.type);
-            const ttVal = emp.ttPoints || 0;
-            
-            const priority = calculatePriority(emp.name);
-            const starIcon = priority > 0 ? `<span class="star-priority" title="أولوية خروج (نقاط TT: ${priority})">⭐</span>` : '';
-            
-            const eligibility = eligibilityMap.get(emp.name);
 
-            tbody.innerHTML += `
+        function renderTable(items) {
+            const tbody = document.getElementById('employeeTable');
+            tbody.innerHTML = "";
+
+            const eligibilityMap = new Map();
+            items.forEach(emp => {
+                if (!eligibilityMap.has(emp.name)) {
+                    eligibilityMap.set(emp.name, getSmartEligibility(emp.name));
+                }
+            });
+
+            if (items.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>لا توجد بيانات.</td></tr>";
+                return;
+            }
+            items.sort((a, b) => b.id - a.id).forEach(emp => {
+                const days = calculateDays(emp.start, emp.end);
+                const tClass = getBadgeClass(emp.type);
+                const ttVal = emp.ttPoints || 0;
+
+                const priority = calculatePriorityTT(emp.name);
+                const starIcon = priority > 0 ?
+                    `<span class="star-priority" title="أولوية خروج (نقاط TT: ${priority})">⭐</span>` : '';
+
+                const eligibility = eligibilityMap.get(emp.name);
+
+                tbody.innerHTML += `
                 <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}" data-end="${emp.end}">
                     <td><strong class="emp-clickable" onclick="viewHistory('${emp.name}')">${emp.name}</strong> ${starIcon}</td>
                     <td><span class="badge ${tClass}">${emp.type}</span></td>
@@ -499,178 +811,407 @@
                         <button class="del-btn" onclick="openModal('DELETE', '${emp.firebaseKey}')">حذف</button>
                     </td>
                 </tr>`;
-        });
-    }
-
-    function prepareEdit(key) {
-        const emp = allRecords.find(r => r.firebaseKey === key);
-        if (!emp) return;
-        selectedKey = key;
-        document.getElementById('empName').value = emp.name;
-        document.getElementById('leaveType').value = emp.type;
-        document.getElementById('startDate').value = emp.start;
-        document.getElementById('endDate').value = emp.end;
-        
-        const btn = document.getElementById('mainActionBtn');
-        btn.innerText = "📝 تحديث البيانات";
-        btn.className = "update-btn";
-        btn.onclick = () => openModal('EDIT', key);
-        document.getElementById('cancelEditBtn').style.display = "inline-block";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function resetForm() {
-        selectedKey = null;
-        document.getElementById('empName').value = "";
-        document.getElementById('startDate').value = "";
-        document.getElementById('endDate').value = "";
-        const btn = document.getElementById('mainActionBtn');
-        btn.innerText = "➕ حفظ سحابي";
-        btn.className = "add-btn";
-        btn.onclick = () => openModal('ADD');
-        document.getElementById('cancelEditBtn').style.display = "none";
-    }
-
-    async function executeUpdate(key) {
-        const name = document.getElementById('empName').value.trim();
-        const type = document.getElementById('leaveType').value;
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        const oldData = allRecords.find(r => r.firebaseKey === key);
-
-        if (!name || !start || !end) return alert("يرجى إكمال البيانات");
-
-        const ttPoints = (type === 'أخرى') ? 1 : 0;
-
-        const updatedData = { ...oldData, name, type, start, end, ttPoints };
-        try {
-            await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(updatedData) });
-            sendTelegramMsg(`📝 تم تعديل إجازة:\nالموظف: ${name}\nبواسطة: ${currentUser}\n\nالنوع: ${type} | نقاط TT: ${ttPoints}\nالفترة: (${start} إلى ${end})`);
-            resetForm();
-            loadData();
-        } catch (error) { alert("خطأ في التحديث"); }
-    }
-
-    async function executeAdd() {
-        const name = document.getElementById('empName').value.trim();
-        const type = document.getElementById('leaveType').value;
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        
-        if (!name || !start || !end) return alert("يرجى إكمال البيانات");
-        
-        const ttPoints = (type === 'أخرى') ? 1 : 0;
-
-        const newEntry = { id: Date.now(), name, type, start, end, ttPoints };
-        try {
-            await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
-            sendTelegramMsg(`➕ إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم\nنقاط TT: ${ttPoints}\nبواسطة: ${currentUser}`);
-            resetForm();
-            loadData();
-        } catch (error) { alert("خطأ في الحفظ"); }
-    }
-
-    async function executeDelete(key) {
-        const emp = allRecords.find(r => r.firebaseKey === key);
-        try {
-            await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'DELETE' });
-            sendTelegramMsg(`🗑️ حذف إجازة:\nالموظف: ${emp ? emp.name : 'غير معروف'}\nبواسطة: ${currentUser}`);
-            loadData();
-        } catch (error) { alert("فشل الحذف"); }
-    }
-
-    function openModal(mode, key = null) {
-        currentMode = mode;
-        selectedKey = key;
-        document.getElementById('modalTitle').innerText = (mode === 'DELETE') ? "كود الحذف" : "كود التحقق";
-        document.getElementById('modalInput').value = "";
-        document.getElementById('customModal').style.display = 'flex';
-        document.getElementById('modalInput').focus();
-    }
-
-    function closeModal() { document.getElementById('customModal').style.display = 'none'; }
-
-    function handleModalConfirm() {
-        const code = document.getElementById('modalInput').value;
-        if ((currentMode === 'ADD' || currentMode === 'EDIT') && code === ADD_CODE) {
-            if (currentMode === 'ADD') executeAdd(); else executeUpdate(selectedKey);
+            });
         }
-        else if (currentMode === 'DELETE' && code === DELETE_CODE) {
-            executeDelete(selectedKey);
-        }
-        else {
-            sendTelegramMsg(`🚨 محاولة فاشلة:\nكود خطأ (${code}) أثناء ${currentMode}\nالمستخدم: ${currentUser}`);
-            return alert("الكود خطأ!");
-        }
-        closeModal();
-    }
 
-    function filterData() {
-        const nameVal = document.getElementById("searchName").value.toLowerCase();
-        const typeVal = document.getElementById("searchType").value;
-        const fromVal = document.getElementById("searchFrom").value;
-        const toVal = document.getElementById("searchTo").value;
-        document.querySelectorAll("#employeeTable tr").forEach(tr => {
-            const rowName = tr.getAttribute("data-name");
-            if (rowName) {
-                const matchN = rowName.includes(nameVal);
-                const matchT = typeVal === "" || tr.getAttribute("data-type") === typeVal;
-                let matchDate = true;
-                const rs = tr.getAttribute("data-start"), re = tr.getAttribute("data-end");
-                if (fromVal && toVal) matchDate = (rs <= toVal && re >= fromVal);
-                else if (fromVal) matchDate = (re >= fromVal);
-                else if (toVal) matchDate = (rs <= toVal);
-                tr.style.display = (matchN && matchT && matchDate) ? "" : "none";
+        function prepareEdit(key) {
+            const emp = allRecords.find(r => r.firebaseKey === key);
+            if (!emp) return;
+            selectedKey = key;
+            document.getElementById('empName').value = emp.name;
+            document.getElementById('leaveType').value = emp.type;
+            document.getElementById('startDate').value = emp.start;
+            document.getElementById('endDate').value = emp.end;
+
+            const btn = document.getElementById('mainActionBtn');
+            btn.innerText = "📝 تحديث البيانات";
+            btn.className = "update-btn";
+            btn.onclick = () => openModal('EDIT', key);
+            document.getElementById('cancelEditBtn').style.display = "inline-block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            selectedKey = null;
+            document.getElementById('empName').value = "";
+            document.getElementById('startDate').value = "";
+            document.getElementById('endDate').value = "";
+            const btn = document.getElementById('mainActionBtn');
+            btn.innerText = "➕ حفظ سحابي";
+            btn.className = "add-btn";
+            btn.onclick = () => openModal('ADD');
+            document.getElementById('cancelEditBtn').style.display = "none";
+        }
+
+        async function executeUpdate(key) {
+            const name = document.getElementById('empName').value.trim();
+            const type = document.getElementById('leaveType').value;
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            const oldData = allRecords.find(r => r.firebaseKey === key);
+
+            if (!name || !start || !end) return alert("يرجى إكمال البيانات");
+
+            const ttPoints = (type === 'أخرى') ? 1 : 0;
+
+            const updatedData = { ...oldData, name, type, start, end, ttPoints };
+            try {
+                await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(updatedData) });
+                sendTelegramMsg(
+                    `📝 تم تعديل إجازة:\nالموظف: ${name}\nبواسطة: ${currentUser}\n\nالنوع: ${type} | نقاط TT: ${ttPoints}\nالفترة: (${start} إلى ${end})`
+                    );
+                resetForm();
+                loadData();
+            } catch (error) { alert("خطأ في التحديث"); }
+        }
+
+        async function executeAdd() {
+            const name = document.getElementById('empName').value.trim();
+            const type = document.getElementById('leaveType').value;
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+
+            if (!name || !start || !end) return alert("يرجى إكمال البيانات");
+
+            const ttPoints = (type === 'أخرى') ? 1 : 0;
+
+            const newEntry = { id: Date.now(), name, type, start, end, ttPoints };
+            try {
+                await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
+                sendTelegramMsg(
+                    `➕ إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم\nنقاط TT: ${ttPoints}\nبواسطة: ${currentUser}`
+                    );
+                resetForm();
+                loadData();
+            } catch (error) { alert("خطأ في الحفظ"); }
+        }
+
+        async function executeDelete(key) {
+            const emp = allRecords.find(r => r.firebaseKey === key);
+            try {
+                await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'DELETE' });
+                sendTelegramMsg(`🗑️ حذف إجازة:\nالموظف: ${emp ? emp.name : 'غير معروف'}\nبواسطة: ${currentUser}`);
+                loadData();
+            } catch (error) { alert("فشل الحذف"); }
+        }
+
+        function openModal(mode, key = null) {
+            currentMode = mode;
+            selectedKey = key;
+            document.getElementById('modalTitle').innerText = (mode === 'DELETE') ? "كود الحذف" : "كود التحقق";
+            document.getElementById('modalInput').value = "";
+            document.getElementById('customModal').style.display = 'flex';
+            document.getElementById('modalInput').focus();
+        }
+
+        function closeModal() { document.getElementById('customModal').style.display = 'none'; }
+
+        function handleModalConfirm() {
+            const code = document.getElementById('modalInput').value;
+            if ((currentMode === 'ADD' || currentMode === 'EDIT') && code === ADD_CODE) {
+                if (currentMode === 'ADD') executeAdd();
+                else executeUpdate(selectedKey);
+            } else if (currentMode === 'DELETE' && code === DELETE_CODE) {
+                executeDelete(selectedKey);
+            } else {
+                sendTelegramMsg(`🚨 محاولة فاشلة:\nكود خطأ (${code}) أثناء ${currentMode}\nالمستخدم: ${currentUser}`);
+                return alert("الكود خطأ!");
             }
-        });
-    }
+            closeModal();
+        }
 
-    function clearFilters() {
-        document.getElementById("searchName").value = "";
-        document.getElementById("searchType").value = "";
-        document.getElementById("searchFrom").value = "";
-        document.getElementById("searchTo").value = "";
-        filterData();
-    }
+        function filterData() {
+            const nameVal = document.getElementById("searchName").value.toLowerCase();
+            const typeVal = document.getElementById("searchType").value;
+            const fromVal = document.getElementById("searchFrom").value;
+            const toVal = document.getElementById("searchTo").value;
+            document.querySelectorAll("#employeeTable tr").forEach(tr => {
+                const rowName = tr.getAttribute("data-name");
+                if (rowName) {
+                    const matchN = rowName.includes(nameVal);
+                    const matchT = typeVal === "" || tr.getAttribute("data-type") === typeVal;
+                    let matchDate = true;
+                    const rs = tr.getAttribute("data-start"),
+                        re = tr.getAttribute("data-end");
+                    if (fromVal && toVal) matchDate = (rs <= toVal && re >= fromVal);
+                    else if (fromVal) matchDate = (re >= fromVal);
+                    else if (toVal) matchDate = (rs <= toVal);
+                    tr.style.display = (matchN && matchT && matchDate) ? "" : "none";
+                }
+            });
+        }
 
-    function viewHistory(name) {
-        const historyBody = document.getElementById('historyTableBody');
-        const totalDaysEl = document.getElementById('totalDaysSum');
-        const totalTtEl = document.getElementById('totalTtSum');
-        historyBody.innerHTML = "";
-        document.getElementById('histName').innerText = `سجل إجازات: ${name}`;
-        const filtered = allRecords.filter(r => r.name === name);
-        let totalDays = 0;
-        let totalTt = 0;
-        filtered.forEach(rec => {
-            const d = calculateDays(rec.start, rec.end);
-            const tt = rec.ttPoints || 0;
-            totalDays += d;
-            totalTt += tt;
-            historyBody.innerHTML += `<tr>
+        function clearFilters() {
+            document.getElementById("searchName").value = "";
+            document.getElementById("searchType").value = "";
+            document.getElementById("searchFrom").value = "";
+            document.getElementById("searchTo").value = "";
+            filterData();
+        }
+
+        function viewHistory(name) {
+            const historyBody = document.getElementById('historyTableBody');
+            const totalDaysEl = document.getElementById('totalDaysSum');
+            const totalTtEl = document.getElementById('totalTtSum');
+            historyBody.innerHTML = "";
+            document.getElementById('histName').innerText = `سجل إجازات: ${name}`;
+            const filtered = allRecords.filter(r => r.name === name);
+            let totalDays = 0;
+            let totalTt = 0;
+            filtered.forEach(rec => {
+                const d = calculateDays(rec.start, rec.end);
+                const tt = rec.ttPoints || 0;
+                totalDays += d;
+                totalTt += tt;
+                historyBody.innerHTML += `<tr>
                 <td>${rec.type}</td><td>${rec.start}</td><td>${rec.end}</td><td>${d} يوم</td>
                 <td style="text-align:center;">${tt > 0 ? '⭐ '+tt : '-'}</td>
                 </tr>`;
-        });
-        totalDaysEl.innerText = `${totalDays} يوم`;
-        totalTtEl.innerText = `⭐ ${totalTt} نقطة`;
-        document.getElementById('historyModal').style.display = 'flex';
-    }
+            });
+            totalDaysEl.innerText = `${totalDays} يوم`;
+            totalTtEl.innerText = `⭐ ${totalTt} نقطة`;
+            document.getElementById('historyModal').style.display = 'flex';
+        }
 
-    function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
-    function calculateDays(s, e) {
-        const diff = Math.ceil(Math.abs(new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24)) + 1;
-        return isNaN(diff) ? 0 : diff;
-    }
-    function getBadgeClass(type) {
-        const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted', 'أخرى': 'other' };
-        return types[type] || 'other';
-    }
-    function calculatePriority(empName) {
-        return allRecords
-            .filter(r => r.name === empName && r.type === 'أخرى')
-            .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
-    }
-</script>
+        function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
+
+        function calculateDays(s, e) {
+            const diff = Math.ceil(Math.abs(new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24)) + 1;
+            return isNaN(diff) ? 0 : diff;
+        }
+
+        function getBadgeClass(type) {
+            const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted',
+            'أخرى': 'other' };
+            return types[type] || 'other';
+        }
+
+        function calculatePriorityTT(empName) {
+            return allRecords
+                .filter(r => r.name === empName && r.type === 'أخرى')
+                .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
+        }
+
+        // ============ دوال نافذة الأولوية المتطورة ============
+        async function fetchAllRecords() {
+            try {
+                const response = await fetch(DB_JSON_URL);
+                const data = await response.json();
+                return data ? Object.keys(data).map(key => ({ ...data[key], firebaseKey: key })) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function getLastLeaveDateForEmployeeFromRecords(records, empName) {
+            const today = new Date();
+            let lastDate = null;
+            records.forEach(rec => {
+                if (rec.name === empName && rec.end) {
+                    const endDate = new Date(rec.end);
+                    if (endDate <= today) {
+                        if (!lastDate || endDate > lastDate) {
+                            lastDate = endDate;
+                        }
+                    }
+                }
+            });
+            return lastDate;
+        }
+
+        function calculateAdvancedScore(empName, records) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const empRecords = records.filter(r => r.name === empName);
+            const monthsRequired = parseInt(document.getElementById('eligMonths')?.value) || 6;
+
+            const lastDate = getLastLeaveDateForEmployeeFromRecords(records, empName);
+            let monthsSinceLast = 999;
+            if (lastDate) {
+                const diffTime = Math.abs(today - lastDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                monthsSinceLast = diffDays / 30.44;
+            }
+            if (monthsSinceLast === 999) monthsSinceLast = monthsRequired * 2;
+
+            const gapScore = Math.min(monthsSinceLast / (monthsRequired * 2), 1.5) * 35;
+
+            const totalTT = empRecords
+                .filter(r => r.type === 'أخرى')
+                .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
+            const ttScore = Math.min(totalTT / 15, 1) * 25;
+
+            const leavesThisYear = empRecords.filter(r => {
+                const startYear = new Date(r.start).getFullYear();
+                const endYear = new Date(r.end).getFullYear();
+                return startYear === currentYear || endYear === currentYear;
+            }).length;
+            const yearScore = Math.max(0, (8 - leavesThisYear) / 8) * 20;
+
+            const totalDays = empRecords.reduce((sum, r) => sum + calculateDays(r.start, r.end), 0);
+            const dayScore = Math.max(0, (90 - totalDays) / 90) * 15;
+
+            const sickCount = empRecords.filter(r => r.type === 'مرضية').length;
+            const balanceScore = Math.max(0, (5 - sickCount) / 5) * 5;
+
+            const totalScore = Math.round(gapScore + ttScore + yearScore + dayScore + balanceScore);
+
+            const reasons = [];
+            if (gapScore >= 25) reasons.push('انتظار طويل ⏳');
+            if (gapScore < 10) reasons.push('أخذ إجازة حديثاً 🕒');
+            if (ttScore >= 15) reasons.push('نقاط TT عالية ⭐');
+            if (yearScore >= 15) reasons.push('إجازات قليلة هذا العام 📅');
+            if (leavesThisYear >= 5) reasons.push('إجازات كثيرة هذا العام 📆');
+            if (totalDays <= 30) reasons.push('أيام إجمالية قليلة ✅');
+            if (totalDays > 60) reasons.push('أيام كثيرة مستهلكة 📊');
+            if (balanceScore < 3) reasons.push('إجازات مرضية متكررة 🤒');
+            if (sickCount === 0) reasons.push('لا توجد مرضية 💪');
+
+            return {
+                score: totalScore,
+                gapMonths: monthsSinceLast === 999 ? null : monthsSinceLast,
+                totalTT,
+                leavesThisYear,
+                totalDays,
+                sickCount,
+                reasons: reasons.slice(0, 3).join(' · ') || 'بيانات محدودة'
+            };
+        }
+
+        async function showPriorityList() {
+            const modal = document.getElementById('priorityModal');
+            const content = document.getElementById('priorityModalContent');
+
+            content.innerHTML = `
+            <h3>🔐 الرمز السري</h3>
+            <p>أدخل رمز الدخول لعرض قائمة الأولوية الذكية:</p>
+            <input type="password" id="priorityPinInput" class="pin-input" placeholder="****" maxlength="10">
+            <br>
+            <button class="pin-btn" onclick="checkPriorityPin()">تحقق</button>
+            <p id="pinError" class="pin-error" style="display:none;">❌ الرمز غير صحيح، حاول مرة أخرى.</p>
+        `;
+            modal.style.display = 'flex';
+            document.getElementById('priorityPinInput').focus();
+        }
+
+        function checkPriorityPin() {
+            const input = document.getElementById('priorityPinInput').value;
+            const encodedInput = btoa(input);
+            if (encodedInput === CORRECT_PIN_ENCODED) {
+                loadPriorityListContent();
+            } else {
+                document.getElementById('pinError').style.display = 'block';
+                document.getElementById('priorityPinInput').value = '';
+                document.getElementById('priorityPinInput').focus();
+            }
+        }
+
+        async function loadPriorityListContent() {
+            const content = document.getElementById('priorityModalContent');
+            content.innerHTML = '<div style="text-align:center; padding:20px;">⏳ جاري تحليل البيانات...</div>';
+
+            const records = await fetchAllRecords();
+            if (records.length === 0) {
+                content.innerHTML = '<p style="text-align:center;">لا توجد بيانات حالياً.</p>';
+                return;
+            }
+
+            const uniqueNames = [...new Set(records.map(r => r.name))];
+            const employees = uniqueNames.map(name => {
+                const analysis = calculateAdvancedScore(name, records);
+                const lastDate = getLastLeaveDateForEmployeeFromRecords(records, name);
+                const today = new Date();
+                let gapMonths = 999; // كبير جداً إذا لم توجد إجازة
+                if (lastDate) {
+                    const diffTime = Math.abs(today - lastDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    gapMonths = Math.round((diffDays / 30.44) * 10) / 10; // لأقرب 0.1 شهر
+                }
+                return { name, ...analysis, gapMonths };
+            });
+
+            // الترتيب حسب الأطول مدة منذ آخر إجازة (منتظر أكثر)
+            employees.sort((a, b) => b.gapMonths - a.gapMonths);
+
+            const top15 = employees.slice(0, 15);
+
+            let html = `
+            <h3>🔝 قائمة الأولوية (الأطول انتظاراً)</h3>
+            <p style="font-size:12px; color:#7f8c8d;">مرتبين حسب المدة منذ آخر إجازة (من لم يخرج منذ فترة أطول يظهر أولاً)</p>
+            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead>
+                    <tr style="background:#f8f9fa;">
+                        <th>#</th>
+                        <th>الاسم</th>
+                        <th>آخر إجازة منذ</th>
+                        <th>الدرجة</th>
+                        <th>الأسباب</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            if (top15.length === 0) {
+                html += '<tr><td colspan="5" style="text-align:center;">لا توجد بيانات كافية.</td></tr>';
+            } else {
+                top15.forEach((emp, index) => {
+                    let gapText;
+                    if (emp.gapMonths >= 999) {
+                        gapText = 'لم يأخذ إجازة أبداً';
+                    } else if (emp.gapMonths >= 12) {
+                        gapText = Math.round(emp.gapMonths / 12) + ' سنة';
+                    } else {
+                        gapText = emp.gapMonths + ' شهر';
+                    }
+
+                    let scoreClass = 'score-low';
+                    if (emp.score >= 65) scoreClass = 'score-high';
+                    else if (emp.score >= 40) scoreClass = 'score-med';
+
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+
+                    html += `
+                    <tr>
+                        <td>${medal} ${index + 1}</td>
+                        <td><strong class="emp-clickable" onclick="viewPriorityEmployeeHistory('${emp.name}')">${emp.name}</strong></td>
+                        <td><strong style="color:#2c3e50;">${gapText}</strong></td>
+                        <td><span class="score-badge" style="color:${emp.score >= 65 ? '#27ae60' : emp.score >= 40 ? '#f39c12' : '#e74c3c'}">${emp.score}/100</span></td>
+                        <td><span class="priority-reason" title="${emp.reasons}">${emp.reasons}</span></td>
+                    </tr>`;
+                });
+            }
+
+            html += '</tbody></table>';
+            html += '<p style="font-size:10px; color:#aaa; margin-top:8px;">🎯 الترتيب حسب المدة منذ آخر إجازة (الأطول في الأعلى). الدرجة لأغراض مرجعية فقط.</p>';
+            html += '<button class="cancel-btn" onclick="document.getElementById(\'priorityModal\').style.display=\'none\'" style="width:100%; margin-top:15px;">إغلاق</button>';
+            content.innerHTML = html;
+        }
+
+        function viewPriorityEmployeeHistory(name) {
+            closePriorityModalTemporarily();
+            viewHistory(name);
+            document.getElementById('historyModal').style.display = 'flex';
+            const origClose = closeHistory;
+            closeHistory = function() {
+                document.getElementById('historyModal').style.display = 'none';
+                closeHistory = origClose;
+                document.getElementById('priorityModal').style.display = 'flex';
+            };
+        }
+
+        function closePriorityModalTemporarily() {
+            document.getElementById('priorityModal').style.display = 'none';
+        }
+
+        document.getElementById('priorityModal').addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter' && document.getElementById('priorityPinInput') && document.getElementById(
+                    'priorityModal').style.display === 'flex') {
+                checkPriorityPin();
+            }
+        });
+    </script>
 </body>
 </html>
