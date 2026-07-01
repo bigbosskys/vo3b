@@ -2,8 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>نظام إدارة الإجازات السحابي - Vo3b | TT للأخرى فقط</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2c3e50;
@@ -13,14 +14,44 @@
             --warning: #f39c12;
             --bg: #f4f7f6;
             --star-gold: #f1c40f;
+            --ink: #0d1117;
+            --ink2: #1c2333;
+            --ink3: #2d3748;
+            --slate: #4a5568;
+            --mist: #8492a6;
+            --cloud: #e2e8f0;
+            --fog: #f4f6f9;
+            --white: #ffffff;
+            --accent: #1a56db;
+            --accent-light: #e8f0fe;
+            --accent-dark: #1140a8;
+            --green: #0e7c4a;
+            --green-l: #d1fae5;
+            --amber: #b45309;
+            --amber-l: #fef3c7;
+            --red: #b91c1c;
+            --red-l: #fee2e2;
+            --r: 6px;
+            --font: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .05);
+            --shadow: 0 4px 12px rgba(0, 0, 0, .08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, .12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font);
             background-color: var(--bg);
-            margin: 0;
-            padding: 5px;
-            direction: rtl;
+            color: var(--ink);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         #loginOverlay {
@@ -36,6 +67,7 @@
             align-items: center;
             padding-top: 15vh;
             z-index: 2000;
+            gap: 15px;
         }
 
         .login-box {
@@ -46,7 +78,6 @@
             width: 90%;
             max-width: 350px;
             text-align: center;
-            margin-bottom: 20px;
         }
 
         .login-box h2 {
@@ -64,31 +95,34 @@
             font-size: 16px;
         }
 
-        .login-btn {
+        .login-btn,
+        .priority-btn,
+        .scheduler-btn {
             width: 100%;
             padding: 12px;
-            background: var(--success);
-            color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 5px;
+            color: white;
+            transition: 0.2s;
         }
 
+        .login-btn {
+            background: var(--success);
+        }
         .priority-btn {
             background: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 12px 26px;
-            margin-top: 5px;
-            width: auto;
-            min-width: 200px;
+        }
+        .scheduler-btn {
+            background: #1a56db;
+        }
+        .login-btn:hover,
+        .priority-btn:hover,
+        .scheduler-btn:hover {
+            filter: brightness(1.1);
         }
 
         #mainContent {
@@ -102,7 +136,8 @@
 
         #customModal,
         #historyModal,
-        #priorityModal {
+        #priorityModal,
+        #schedulerModal {
             display: none;
             position: fixed;
             top: 0;
@@ -110,17 +145,19 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
+            z-index: 3000;
             justify-content: center;
             align-items: center;
         }
 
-        #priorityModal {
-            z-index: 3000;
+        #schedulerModal {
+            z-index: 4000;
         }
 
         .modal-content,
-        .history-content {
+        .history-content,
+        .priority-content,
+        .scheduler-content {
             background: white;
             padding: 20px;
             border-radius: 12px;
@@ -137,14 +174,18 @@
         }
 
         .priority-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 95%;
             max-width: 700px;
-            text-align: center;
             max-height: 90vh;
             overflow-y: auto;
+        }
+
+        .scheduler-content {
+            max-width: 950px;
+            max-height: 95vh;
+            overflow-y: auto;
+            text-align: right;
+            padding: 0;
+            background: var(--fog);
         }
 
         .modal-content h3,
@@ -152,17 +193,6 @@
         .priority-content h3 {
             margin-top: 0;
             color: var(--primary);
-        }
-
-        .modal-content input {
-            width: 80%;
-            padding: 12px;
-            margin: 15px 0;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 20px;
-            letter-spacing: 4px;
         }
 
         .pin-input {
@@ -206,7 +236,6 @@
             background: var(--success);
             color: white;
         }
-
         .cancel-btn {
             background: #eee;
             color: #333;
@@ -260,12 +289,10 @@
             background: var(--success);
             color: white;
         }
-
         .update-btn {
             background: var(--info);
             color: white;
         }
-
         .reset-btn {
             background: #95a5a6;
             color: white;
@@ -342,7 +369,6 @@
             border-radius: 4px;
             margin-right: 2px;
         }
-
         .edit-btn {
             background: var(--warning);
             color: white;
@@ -365,7 +391,6 @@
             transition: 0.2s;
             font-weight: bold;
         }
-
         .emp-clickable:hover {
             color: #2c3e50;
         }
@@ -384,19 +409,16 @@
             font-weight: bold;
             display: inline-block;
         }
-
         .eligible {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-
         .not-eligible {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-
         .neutral {
             background: #fff3cd;
             color: #856404;
@@ -433,7 +455,6 @@
             font-size: 11px;
             margin-top: 15px;
             padding-bottom: 10px;
-            font-family: Arial, sans-serif;
         }
 
         .eligibility-control {
@@ -444,11 +465,6 @@
             align-items: center;
             gap: 4px;
             border: 1px solid #f9e79f;
-        }
-
-        .priority-btn-wrapper {
-            width: 100%;
-            text-align: center;
         }
 
         .pin-error {
@@ -465,13 +481,11 @@
             margin: 2px 0;
             overflow: hidden;
         }
-
         .score-bar-fill {
             height: 100%;
             border-radius: 10px;
             transition: width 0.3s ease;
         }
-
         .score-high {
             background: #27ae60;
         }
@@ -498,6 +512,255 @@
             padding: 2px 6px;
             border-radius: 10px;
         }
+
+        /* Scheduler Styles */
+        .scheduler-header {
+            background: var(--ink);
+            color: var(--white);
+            border-radius: 8px 8px 0 0;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .scheduler-header-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .scheduler-toolbar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            background: white;
+            border-bottom: 1px solid var(--cloud);
+        }
+        .scheduler-card {
+            background: white;
+            margin: 0 16px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--cloud);
+            box-shadow: var(--shadow-sm);
+        }
+        .scheduler-card-header {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--cloud);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--ink3);
+        }
+        .scheduler-tbl-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 4px;
+        }
+        .scheduler-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+            font-size: 13px;
+        }
+        .scheduler-table thead th {
+            background: var(--ink);
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .scheduler-table td {
+            padding: 8px;
+            text-align: center;
+            vertical-align: top;
+        }
+        .scheduler-table td input,
+        .scheduler-table td select {
+            width: 100%;
+            padding: 7px 8px;
+            border: 1px solid var(--cloud);
+            border-radius: 4px;
+            font-family: var(--font);
+            font-size: 13px;
+            min-height: 36px;
+        }
+        .names-cell {
+            min-width: 200px;
+            text-align: right;
+        }
+        .names-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            min-height: 36px;
+            padding: 4px;
+            border: 1px solid var(--cloud);
+            border-radius: 4px;
+            cursor: pointer;
+            background: white;
+            align-content: flex-start;
+        }
+        .names-list.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(26, 86, 219, .1);
+        }
+        .names-list:empty::before {
+            content: 'اضغط لاختيار الأسماء...';
+            color: var(--mist);
+            font-size: 12px;
+            padding: 4px;
+        }
+        .name-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--accent-light);
+            color: var(--accent-dark);
+            border: 1px solid #c7d9fb;
+            border-radius: 50px;
+            padding: 2px 8px 2px 4px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .pill-remove {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(26, 86, 219, .15);
+            color: var(--accent-dark);
+            border: none;
+            cursor: pointer;
+            font-size: 10px;
+            line-height: 1;
+            font-weight: 700;
+            padding: 0;
+        }
+        .btn-row-del {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--cloud);
+            background: white;
+            color: var(--red);
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0 auto;
+        }
+        .bank-grid {
+            padding: 12px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .name-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s;
+            border: 1.5px solid var(--cloud);
+            background: white;
+            color: var(--ink3);
+            user-select: none;
+        }
+        .name-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+        .name-tag.used {
+            background: var(--green-l);
+            border-color: #6ee7b7;
+            color: var(--green);
+            cursor: default;
+        }
+        .name-tag.on-leave {
+            background: var(--red-l);
+            border-color: #f5c6cb;
+            color: var(--red);
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+        .name-tag.locked {
+            background: #f0f0f0;
+            border-color: #ccc;
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .name-tag.no-target {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+        .bank-footer {
+            padding: 10px 14px;
+            border-top: 1px solid var(--cloud);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .dup-badge {
+            display: inline-block;
+            background: var(--amber-l);
+            color: var(--amber);
+            border: 1px solid #fcd34d;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 5px;
+            margin-right: 3px;
+        }
+        .focused-row {
+            background: #f0f5ff;
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--ink);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            transition: transform .3s, opacity .3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .toast.green {
+            background: var(--green);
+        }
+        .toast.amber {
+            background: var(--amber);
+        }
+        .toast.red {
+            background: var(--red);
+        }
+
+        @media (max-width:520px) {
+            .scheduler-toolbar {
+                flex-direction: column;
+            }
+            .btn {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -509,17 +772,21 @@
             <input type="password" id="loginPass" placeholder="كلمة المرور">
             <button class="login-btn" onclick="checkLogin()">دخول</button>
         </div>
-        <div class="priority-btn-wrapper">
+        <div style="display:flex; gap:10px; width:90%; max-width:350px;">
             <button class="priority-btn" onclick="showPriorityList()">🔝 الأولوية</button>
+            <button class="scheduler-btn" onclick="showSchedulerPin()">📋 جدولة الدوام</button>
         </div>
         <div class="copyright">
             © 2026 Vo3b. All Rights Reserved.
         </div>
     </div>
 
-    <!-- نافذة الأولوية -->
     <div id="priorityModal">
-        <div class="priority-content" id="priorityModalContent">
+        <div class="priority-content" id="priorityModalContent"></div>
+    </div>
+
+    <div id="schedulerModal">
+        <div class="scheduler-content" id="schedulerModalContent">
             <!-- يعبأ ديناميكياً -->
         </div>
     </div>
@@ -541,13 +808,7 @@
                 <h3 id="histName">سجل إجازات الموظف</h3>
                 <table style="min-width: 100%;">
                     <thead>
-                        <tr>
-                            <th>النوع</th>
-                            <th>من</th>
-                            <th>إلى</th>
-                            <th>المدة</th>
-                            <th>نقاط TT</th>
-                        </tr>
+                        <tr><th>النوع</th><th>من</th><th>إلى</th><th>المدة</th><th>نقاط TT</th></tr>
                     </thead>
                     <tbody id="historyTableBody"></tbody>
                     <tfoot>
@@ -580,13 +841,11 @@
                 <input type="date" id="searchFrom" onchange="filterData()">
                 <label>إلى:</label>
                 <input type="date" id="searchTo" onchange="filterData()">
-
                 <div class="eligibility-control">
                     <label style="margin:0;">🧠 فترة الاستحقاق الأولية:</label>
                     <input type="number" id="eligMonths" value="6" min="1" max="24" style="width:50px; padding:5px; font-weight:bold;" onchange="renderTable(allRecords)">
                     <span style="font-size:11px;">شهر</span>
                 </div>
-
                 <button class="reset-btn" title="مسح الفلاتر" onclick="clearFilters()">🔄</button>
             </div>
 
@@ -632,6 +891,8 @@
         </div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <script>
         const ACCOUNTS = { "admin": "admin929210", "bigbosskys": "bigbosskys84" };
         const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
@@ -640,17 +901,43 @@
         const ADD_CODE = "90009";
         const BOT_TOKEN = "8409072076:AAGn9aPBY1Y6M9HqPykXqe62txwczkF0pI0";
         const CHAT_ID = "56826977";
+        const CORRECT_PIN_ENCODED = "MDE2MjA="; // 01620
 
         let currentMode = "";
         let selectedKey = null;
         let allRecords = [];
         let currentUser = "";
 
-        const CORRECT_PIN_ENCODED = "MDE2MjA="; // 01620
+        // ═══════════════════════════════════════════
+        //  SCHEDULER STATE
+        // ═══════════════════════════════════════════
+        const EMPLOYEES = [
+            { id: 1, name: "يوسف الحجري" },
+            { id: 2, name: "نايف الكربي" },
+            { id: 3, name: "مصعب بري" },
+            { id: 4, name: "عثمان جافيد" },
+            { id: 5, name: "خالد العنسي" },
+            { id: 6, name: "فوزي يورو" },
+            { id: 7, name: "سالم ابراهيم" },
+            { id: 8, name: "عبد الرحمن ناجي" },
+            { id: 9, name: "امداد شاه" },
+            { id: 10, name: "محمد ناصر" },
+            { id: 11, name: "صالح عوض" },
+            { id: 12, name: "شير علي" },
+            { id: 13, name: "عبد الباسط" },
+            { id: 14, name: "حميد الطاهر" },
+            { id: 15, name: "فضل طه" },
+            { id: 16, name: "محمد توفيق" },
+            { id: 17, name: "محمد الغالي" },
+            { id: 18, name: "سمير عيساوي" }
+        ];
+        const PERIODS = ["الزام الصباح", "الزام العصر", "الزام الليل", "إداري", "إجازة"];
+        let rows = [];
+        let activeRowId = null;
+        let rowCounter = 0;
 
         async function sendTelegramMsg(text) {
-            const url =
-                `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
             try { await fetch(url); } catch (e) { console.error("Telegram Error"); }
         }
 
@@ -705,9 +992,7 @@
                 if (rec.name === empName && rec.end) {
                     const endDate = new Date(rec.end);
                     if (endDate <= today) {
-                        if (!lastDate || endDate > lastDate) {
-                            lastDate = endDate;
-                        }
+                        if (!lastDate || endDate > lastDate) lastDate = endDate;
                     }
                 }
             });
@@ -718,7 +1003,6 @@
             const monthsRequired = parseInt(document.getElementById('eligMonths').value) || 6;
             const today = new Date();
             const currentYear = today.getFullYear();
-
             const lastDate = getLastLeaveDateForEmployee(empName);
             let monthsSinceLast = 999;
             if (lastDate) {
@@ -726,33 +1010,23 @@
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 monthsSinceLast = diffDays / 30.44;
             }
-
-            const totalTT = allRecords
-                .filter(r => r.name === empName && r.type === 'أخرى')
-                .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
-
+            const totalTT = allRecords.filter(r => r.name === empName && r.type === 'أخرى').reduce((sum, r) => sum + (
+                parseInt(r.ttPoints) || 0), 0);
             const leavesThisYear = allRecords.filter(r => {
                 if (r.name !== empName) return false;
                 const startYear = new Date(r.start).getFullYear();
                 const endYear = new Date(r.end).getFullYear();
                 return startYear === currentYear || endYear === currentYear;
             }).length;
-
             let baseColor;
             if (monthsSinceLast >= monthsRequired) baseColor = 'green';
             else if (monthsSinceLast >= monthsRequired * 0.5) baseColor = 'yellow';
             else baseColor = 'red';
-
-            if (totalTT > 9) {
-                if (baseColor === 'red') baseColor = 'yellow';
-                else if (baseColor === 'yellow') baseColor = 'green';
-            }
-            if (leavesThisYear > 5) {
-                if (baseColor === 'green') baseColor = 'yellow';
-                else if (baseColor === 'yellow') baseColor = 'red';
-            }
+            if (totalTT > 9) baseColor = (baseColor === 'red') ? 'yellow' : (baseColor === 'yellow') ? 'green' :
+                baseColor;
+            if (leavesThisYear > 5) baseColor = (baseColor === 'green') ? 'yellow' : (baseColor === 'yellow') ? 'red' :
+                baseColor;
             if (!lastDate) baseColor = 'green';
-
             let statusText, cssClass;
             switch (baseColor) {
                 case 'green':
@@ -767,21 +1041,16 @@
                     statusText = 'غير مستحق';
                     cssClass = 'not-eligible';
             }
-
             return { text: statusText, class: cssClass };
         }
 
         function renderTable(items) {
             const tbody = document.getElementById('employeeTable');
             tbody.innerHTML = "";
-
             const eligibilityMap = new Map();
             items.forEach(emp => {
-                if (!eligibilityMap.has(emp.name)) {
-                    eligibilityMap.set(emp.name, getSmartEligibility(emp.name));
-                }
+                if (!eligibilityMap.has(emp.name)) eligibilityMap.set(emp.name, getSmartEligibility(emp.name));
             });
-
             if (items.length === 0) {
                 tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>لا توجد بيانات.</td></tr>";
                 return;
@@ -790,19 +1059,15 @@
                 const days = calculateDays(emp.start, emp.end);
                 const tClass = getBadgeClass(emp.type);
                 const ttVal = emp.ttPoints || 0;
-
                 const priority = calculatePriorityTT(emp.name);
                 const starIcon = priority > 0 ?
                     `<span class="star-priority" title="أولوية خروج (نقاط TT: ${priority})">⭐</span>` : '';
-
                 const eligibility = eligibilityMap.get(emp.name);
-
                 tbody.innerHTML += `
                 <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}" data-end="${emp.end}">
                     <td><strong class="emp-clickable" onclick="viewHistory('${emp.name}')">${emp.name}</strong> ${starIcon}</td>
                     <td><span class="badge ${tClass}">${emp.type}</span></td>
-                    <td>${emp.start}</td>
-                    <td>${emp.end}</td>
+                    <td>${emp.start}</td><td>${emp.end}</td>
                     <td><span class="days-tag">${days} يوم</span></td>
                     <td class="tt-cell">${ttVal > 0 ? '⭐ '+ttVal : '-'}</td>
                     <td><span class="eligibility-badge ${eligibility.class}">${eligibility.text}</span></td>
@@ -822,7 +1087,6 @@
             document.getElementById('leaveType').value = emp.type;
             document.getElementById('startDate').value = emp.start;
             document.getElementById('endDate').value = emp.end;
-
             const btn = document.getElementById('mainActionBtn');
             btn.innerText = "📝 تحديث البيانات";
             btn.className = "update-btn";
@@ -849,11 +1113,8 @@
             const start = document.getElementById('startDate').value;
             const end = document.getElementById('endDate').value;
             const oldData = allRecords.find(r => r.firebaseKey === key);
-
             if (!name || !start || !end) return alert("يرجى إكمال البيانات");
-
             const ttPoints = (type === 'أخرى') ? 1 : 0;
-
             const updatedData = { ...oldData, name, type, start, end, ttPoints };
             try {
                 await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(updatedData) });
@@ -870,11 +1131,8 @@
             const type = document.getElementById('leaveType').value;
             const start = document.getElementById('startDate').value;
             const end = document.getElementById('endDate').value;
-
             if (!name || !start || !end) return alert("يرجى إكمال البيانات");
-
             const ttPoints = (type === 'أخرى') ? 1 : 0;
-
             const newEntry = { id: Date.now(), name, type, start, end, ttPoints };
             try {
                 await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
@@ -956,8 +1214,8 @@
             historyBody.innerHTML = "";
             document.getElementById('histName').innerText = `سجل إجازات: ${name}`;
             const filtered = allRecords.filter(r => r.name === name);
-            let totalDays = 0;
-            let totalTt = 0;
+            let totalDays = 0,
+                totalTt = 0;
             filtered.forEach(rec => {
                 const d = calculateDays(rec.start, rec.end);
                 const tt = rec.ttPoints || 0;
@@ -982,25 +1240,21 @@
 
         function getBadgeClass(type) {
             const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted',
-            'أخرى': 'other' };
+                'أخرى': 'other' };
             return types[type] || 'other';
         }
 
         function calculatePriorityTT(empName) {
-            return allRecords
-                .filter(r => r.name === empName && r.type === 'أخرى')
-                .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
+            return allRecords.filter(r => r.name === empName && r.type === 'أخرى').reduce((sum, r) => sum + (parseInt(r
+                .ttPoints) || 0), 0);
         }
 
-        // ============ دوال نافذة الأولوية المتطورة ============
         async function fetchAllRecords() {
             try {
                 const response = await fetch(DB_JSON_URL);
                 const data = await response.json();
                 return data ? Object.keys(data).map(key => ({ ...data[key], firebaseKey: key })) : [];
-            } catch (e) {
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
         function getLastLeaveDateForEmployeeFromRecords(records, empName) {
@@ -1009,11 +1263,7 @@
             records.forEach(rec => {
                 if (rec.name === empName && rec.end) {
                     const endDate = new Date(rec.end);
-                    if (endDate <= today) {
-                        if (!lastDate || endDate > lastDate) {
-                            lastDate = endDate;
-                        }
-                    }
+                    if (endDate <= today) { if (!lastDate || endDate > lastDate) lastDate = endDate; }
                 }
             });
             return lastDate;
@@ -1024,7 +1274,6 @@
             const currentYear = today.getFullYear();
             const empRecords = records.filter(r => r.name === empName);
             const monthsRequired = parseInt(document.getElementById('eligMonths')?.value) || 6;
-
             const lastDate = getLastLeaveDateForEmployeeFromRecords(records, empName);
             let monthsSinceLast = 999;
             if (lastDate) {
@@ -1033,29 +1282,21 @@
                 monthsSinceLast = diffDays / 30.44;
             }
             if (monthsSinceLast === 999) monthsSinceLast = monthsRequired * 2;
-
             const gapScore = Math.min(monthsSinceLast / (monthsRequired * 2), 1.5) * 35;
-
-            const totalTT = empRecords
-                .filter(r => r.type === 'أخرى')
-                .reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
+            const totalTT = empRecords.filter(r => r.type === 'أخرى').reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0),
+            0);
             const ttScore = Math.min(totalTT / 15, 1) * 25;
-
             const leavesThisYear = empRecords.filter(r => {
                 const startYear = new Date(r.start).getFullYear();
                 const endYear = new Date(r.end).getFullYear();
                 return startYear === currentYear || endYear === currentYear;
             }).length;
             const yearScore = Math.max(0, (8 - leavesThisYear) / 8) * 20;
-
             const totalDays = empRecords.reduce((sum, r) => sum + calculateDays(r.start, r.end), 0);
             const dayScore = Math.max(0, (90 - totalDays) / 90) * 15;
-
             const sickCount = empRecords.filter(r => r.type === 'مرضية').length;
             const balanceScore = Math.max(0, (5 - sickCount) / 5) * 5;
-
             const totalScore = Math.round(gapScore + ttScore + yearScore + dayScore + balanceScore);
-
             const reasons = [];
             if (gapScore >= 25) reasons.push('انتظار طويل ⏳');
             if (gapScore < 10) reasons.push('أخذ إجازة حديثاً 🕒');
@@ -1066,7 +1307,6 @@
             if (totalDays > 60) reasons.push('أيام كثيرة مستهلكة 📊');
             if (balanceScore < 3) reasons.push('إجازات مرضية متكررة 🤒');
             if (sickCount === 0) reasons.push('لا توجد مرضية 💪');
-
             return {
                 score: totalScore,
                 gapMonths: monthsSinceLast === 999 ? null : monthsSinceLast,
@@ -1081,15 +1321,12 @@
         async function showPriorityList() {
             const modal = document.getElementById('priorityModal');
             const content = document.getElementById('priorityModalContent');
-
             content.innerHTML = `
             <h3>🔐 الرمز السري</h3>
             <p>أدخل رمز الدخول لعرض قائمة الأولوية الذكية:</p>
             <input type="password" id="priorityPinInput" class="pin-input" placeholder="****" maxlength="10">
-            <br>
-            <button class="pin-btn" onclick="checkPriorityPin()">تحقق</button>
-            <p id="pinError" class="pin-error" style="display:none;">❌ الرمز غير صحيح، حاول مرة أخرى.</p>
-        `;
+            <br><button class="pin-btn" onclick="checkPriorityPin()">تحقق</button>
+            <p id="pinError" class="pin-error" style="display:none;">❌ الرمز غير صحيح، حاول مرة أخرى.</p>`;
             modal.style.display = 'flex';
             document.getElementById('priorityPinInput').focus();
         }
@@ -1109,80 +1346,47 @@
         async function loadPriorityListContent() {
             const content = document.getElementById('priorityModalContent');
             content.innerHTML = '<div style="text-align:center; padding:20px;">⏳ جاري تحليل البيانات...</div>';
-
             const records = await fetchAllRecords();
             if (records.length === 0) {
                 content.innerHTML = '<p style="text-align:center;">لا توجد بيانات حالياً.</p>';
                 return;
             }
-
             const uniqueNames = [...new Set(records.map(r => r.name))];
             const employees = uniqueNames.map(name => {
                 const analysis = calculateAdvancedScore(name, records);
                 const lastDate = getLastLeaveDateForEmployeeFromRecords(records, name);
                 const today = new Date();
-                let gapMonths = 999; // كبير جداً إذا لم توجد إجازة
+                let gapMonths = 999;
                 if (lastDate) {
                     const diffTime = Math.abs(today - lastDate);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    gapMonths = Math.round((diffDays / 30.44) * 10) / 10; // لأقرب 0.1 شهر
+                    gapMonths = Math.round((diffDays / 30.44) * 10) / 10;
                 }
                 return { name, ...analysis, gapMonths };
             });
-
-            // الترتيب حسب الأطول مدة منذ آخر إجازة (منتظر أكثر)
             employees.sort((a, b) => b.gapMonths - a.gapMonths);
-
             const top15 = employees.slice(0, 15);
-
             let html = `
             <h3>🔝 قائمة الأولوية (الأطول انتظاراً)</h3>
-            <p style="font-size:12px; color:#7f8c8d;">مرتبين حسب المدة منذ آخر إجازة (من لم يخرج منذ فترة أطول يظهر أولاً)</p>
+            <p style="font-size:12px; color:#7f8c8d;">مرتبين حسب المدة منذ آخر إجازة</p>
             <table style="width:100%; border-collapse:collapse; font-size:13px;">
-                <thead>
-                    <tr style="background:#f8f9fa;">
-                        <th>#</th>
-                        <th>الاسم</th>
-                        <th>آخر إجازة منذ</th>
-                        <th>الدرجة</th>
-                        <th>الأسباب</th>
-                    </tr>
-                </thead>
+                <thead><tr style="background:#f8f9fa;"><th>#</th><th>الاسم</th><th>آخر إجازة منذ</th><th>الدرجة</th><th>الأسباب</th></tr></thead>
                 <tbody>`;
-
-            if (top15.length === 0) {
-                html += '<tr><td colspan="5" style="text-align:center;">لا توجد بيانات كافية.</td></tr>';
-            } else {
-                top15.forEach((emp, index) => {
-                    let gapText;
-                    if (emp.gapMonths >= 999) {
-                        gapText = 'لم يأخذ إجازة أبداً';
-                    } else if (emp.gapMonths >= 12) {
-                        gapText = Math.round(emp.gapMonths / 12) + ' سنة';
-                    } else {
-                        gapText = emp.gapMonths + ' شهر';
-                    }
-
-                    let scoreClass = 'score-low';
-                    if (emp.score >= 65) scoreClass = 'score-high';
-                    else if (emp.score >= 40) scoreClass = 'score-med';
-
-                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
-
-                    html += `
-                    <tr>
-                        <td>${medal} ${index + 1}</td>
-                        <td><strong class="emp-clickable" onclick="viewPriorityEmployeeHistory('${emp.name}')">${emp.name}</strong></td>
-                        <td><strong style="color:#2c3e50;">${gapText}</strong></td>
-                        <td><span class="score-badge" style="color:${emp.score >= 65 ? '#27ae60' : emp.score >= 40 ? '#f39c12' : '#e74c3c'}">${emp.score}/100</span></td>
-                        <td><span class="priority-reason" title="${emp.reasons}">${emp.reasons}</span></td>
-                    </tr>`;
-                });
-            }
-
+            if (top15.length === 0) html += '<tr><td colspan="5">لا توجد بيانات.</td></tr>';
+            else top15.forEach((emp, i) => {
+                let gapText = emp.gapMonths >= 999 ? 'لم يأخذ إجازة أبداً' : emp.gapMonths >= 12 ? Math.round(emp
+                    .gapMonths / 12) + ' سنة' : emp.gapMonths + ' شهر';
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+                html += `<tr>
+                    <td>${medal} ${i+1}</td>
+                    <td><strong class="emp-clickable" onclick="viewPriorityEmployeeHistory('${emp.name}')">${emp.name}</strong></td>
+                    <td><strong style="color:#2c3e50;">${gapText}</strong></td>
+                    <td><span style="color:${emp.score>=65?'#27ae60':emp.score>=40?'#f39c12':'#e74c3c'}">${emp.score}/100</span></td>
+                    <td><span class="priority-reason" title="${emp.reasons}">${emp.reasons}</span></td></tr>`;
+            });
             html += '</tbody></table>';
-            html += '<p style="font-size:10px; color:#aaa; margin-top:8px;">🎯 الترتيب حسب المدة منذ آخر إجازة (الأطول في الأعلى). الدرجة لأغراض مرجعية فقط.</p>';
-            html += '<button class="cancel-btn" onclick="document.getElementById(\'priorityModal\').style.display=\'none\'" style="width:100%; margin-top:15px;">إغلاق</button>';
+            html +=
+                '<button class="cancel-btn" onclick="document.getElementById(\'priorityModal\').style.display=\'none\'" style="width:100%; margin-top:15px;">إغلاق</button>';
             content.innerHTML = html;
         }
 
@@ -1198,18 +1402,351 @@
             };
         }
 
-        function closePriorityModalTemporarily() {
-            document.getElementById('priorityModal').style.display = 'none';
+        function closePriorityModalTemporarily() { document.getElementById('priorityModal').style.display = 'none'; }
+
+        // ═══════════════════════════════════════════
+        //  SCHEDULER FUNCTIONS
+        // ═══════════════════════════════════════════
+        function isEmployeeOnLeave(empName, dateStr) {
+            if (!dateStr || !allRecords.length) return false;
+            const checkDate = new Date(dateStr);
+            return allRecords.some(rec => {
+                if (rec.name !== empName) return false;
+                const start = new Date(rec.start);
+                const end = new Date(rec.end);
+                return checkDate >= start && checkDate <= end;
+            });
         }
 
-        document.getElementById('priorityModal').addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
+        function showSchedulerPin() {
+            const modal = document.getElementById('schedulerModal');
+            const content = document.getElementById('schedulerModalContent');
+            content.innerHTML = `
+            <div style="padding:20px; background:white; border-radius:12px; text-align:center;">
+                <h3>🔐 رمز الدخول</h3>
+                <p>أدخل الرمز لفتح نظام جدولة الدوام:</p>
+                <input type="password" id="schedulerPinInput" class="pin-input" placeholder="****" maxlength="10">
+                <br><button class="pin-btn" onclick="checkSchedulerPin()">تحقق</button>
+                <p id="schedulerPinError" class="pin-error" style="display:none;">❌ الرمز غير صحيح</p>
+            </div>`;
+            modal.style.display = 'flex';
+            document.getElementById('schedulerPinInput').focus();
+        }
 
+        function checkSchedulerPin() {
+            const input = document.getElementById('schedulerPinInput').value;
+            const encodedInput = btoa(input);
+            if (encodedInput === CORRECT_PIN_ENCODED) {
+                loadSchedulerContent();
+            } else {
+                document.getElementById('schedulerPinError').style.display = 'block';
+                document.getElementById('schedulerPinInput').value = '';
+                document.getElementById('schedulerPinInput').focus();
+            }
+        }
+
+        function loadSchedulerContent() {
+            const content = document.getElementById('schedulerModalContent');
+            if (!allRecords.length) {
+                content.innerHTML =
+                    '<div style="padding:20px; text-align:center;">⏳ جاري تحميل بيانات الإجازات... <br><button class="btn btn-ghost" onclick="loadData().then(()=>loadSchedulerContent())">إعادة المحاولة</button></div>';
+                loadData().then(() => loadSchedulerContent());
+                return;
+            }
+            loadSchedulerLS();
+            if (rows.length === 0) addSchedulerRow();
+            renderScheduler();
+        }
+
+        function renderScheduler() {
+            const content = document.getElementById('schedulerModalContent');
+            let html = `
+            <div class="scheduler-header">
+                <div>
+                    <div class="scheduler-header-title">📋 نظام جدولة الدوام</div>
+                    <div style="font-size:12px; color:var(--mist);">بنك الأسماء الذكي – متصل بقاعدة الإجازات</div>
+                </div>
+                <button class="btn btn-ghost" style="color:white; border-color:rgba(255,255,255,.3);" onclick="document.getElementById('schedulerModal').style.display='none'">✕ إغلاق</button>
+            </div>
+            <div class="scheduler-toolbar">
+                <button class="btn btn-success" onclick="addSchedulerRow()">＋ إضافة فترة</button>
+                <button class="btn btn-ghost" onclick="saveSchedulerLS()">↓ حفظ</button>
+                <button class="btn btn-ghost" onclick="copySchedulerText()">📋 نسخ</button>
+                <button class="btn btn-danger" onclick="clearSchedulerAll()">✕ مسح الكل</button>
+                <span style="font-size:12px; color:var(--mist); margin-right:auto;">إجمالي الفترات: <strong id="hdrPeriods">${rows.length}</strong></span>
+            </div>
+            <div class="scheduler-card">
+                <div class="scheduler-card-header">🗓 جدول الفترات</div>
+                <div class="scheduler-tbl-wrap">
+                    <table class="scheduler-table">
+                        <thead><tr><th>التاريخ</th><th>الفترة</th><th>أفراد المجموعة</th><th>الوقت</th><th>حذف</th></tr></thead>
+                        <tbody id="schedulerTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="scheduler-card">
+                <div class="scheduler-card-header">👥 بنك الأسماء <span id="bankHint" style="font-weight:400;color:var(--mist);font-size:12px;margin-right:8px;">— اضغط على صف في الجدول أولاً</span></div>
+                <div class="bank-grid" id="bankGrid"></div>
+                <div class="bank-footer">
+                    <span class="bank-hint" style="font-size:11px; color:var(--mist);">✓ أخضر = مستخدم | <span style="color:var(--red);">🚫 أحمر = في إجازة</span> | <span style="color:#888;">🔒 رمادي = محجوز في فترة أخرى</span></span>
+                    <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="resetSchedulerBank()">↺ إعادة تعيين</button>
+                </div>
+            </div>`;
+            content.innerHTML = html;
+            renderSchedulerTable();
+            renderSchedulerBank();
+            updateSchedulerHeader();
+        }
+
+        function renderSchedulerTable() {
+            const tbody = document.getElementById('schedulerTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            rows.forEach(row => {
+                const isActive = row.id === activeRowId;
+                const tr = document.createElement('tr');
+                if (isActive) tr.classList.add('focused-row');
+                const tdDate = document.createElement('td');
+                const inDate = document.createElement('input');
+                inDate.type = 'date';
+                inDate.value = row.date;
+                inDate.addEventListener('change', e => { row.date = e.target.value;
+                    renderSchedulerBank();
+                    updateSchedulerHeader(); });
+                tdDate.appendChild(inDate);
+                const tdPer = document.createElement('td');
+                const sel = document.createElement('select');
+                PERIODS.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.textContent = p;
+                    if (p === row.period) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+                sel.addEventListener('change', e => { row.period = e.target.value; });
+                tdPer.appendChild(sel);
+                const tdNames = document.createElement('td');
+                tdNames.className = 'names-cell';
+                const namesList = document.createElement('div');
+                namesList.className = 'names-list' + (isActive ? ' active' : '');
+                namesList.addEventListener('click', () => setSchedulerActive(row.id));
+                row.names.forEach(name => {
+                    const pill = document.createElement('span');
+                    pill.className = 'name-pill';
+                    pill.innerHTML = name;
+                    const rmBtn = document.createElement('button');
+                    rmBtn.className = 'pill-remove';
+                    rmBtn.textContent = '×';
+                    rmBtn.addEventListener('click', e => { e.stopPropagation();
+                        removeSchedulerPill(row.id, name); });
+                    pill.appendChild(rmBtn);
+                    namesList.appendChild(pill);
+                });
+                tdNames.appendChild(namesList);
+                const tdTime = document.createElement('td');
+                const inTime = document.createElement('input');
+                inTime.type = 'time';
+                inTime.value = row.time;
+                inTime.addEventListener('change', e => { row.time = e.target.value; });
+                tdTime.appendChild(inTime);
+                const tdDel = document.createElement('td');
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-row-del';
+                delBtn.textContent = '✕';
+                delBtn.addEventListener('click', () => {
+                    if (rows.length === 1 || confirm('حذف هذه الفترة؟')) deleteSchedulerRow(row.id);
+                });
+                tdDel.appendChild(delBtn);
+                tr.append(tdDate, tdPer, tdNames, tdTime, tdDel);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderSchedulerBank() {
+            const grid = document.getElementById('bankGrid');
+            const hint = document.getElementById('bankHint');
+            if (!grid) return;
+            grid.innerHTML = '';
+            const allUsed = new Set();
+            rows.forEach(r => r.names.forEach(n => allUsed.add(n)));
+            const activeRow = rows.find(r => r.id === activeRowId);
+            const activeNames = activeRow ? activeRow.names : new Set();
+            const activeDate = activeRow ? activeRow.date : null;
+            if (hint) hint.textContent = activeRow ? `— ${activeRow.period} (${activeRow.date})` :
+                '— اضغط على صف في الجدول';
+            EMPLOYEES.forEach(emp => {
+                const tag = document.createElement('div');
+                tag.className = 'name-tag';
+                const inActive = activeNames.has(emp.name);
+                const inOther = allUsed.has(emp.name) && !inActive;
+                const onLeave = activeDate ? isEmployeeOnLeave(emp.name, activeDate) : false;
+                if (inActive) tag.classList.add('used');
+                if (!activeRowId) tag.classList.add('no-target');
+                if (onLeave && !inActive) tag.classList.add('on-leave');
+                if (inOther && !inActive) tag.classList.add('locked');
+                tag.innerHTML = (inActive ? '✓ ' : '') + (onLeave && !inActive ? '🚫 ' : '') + (inOther && !inActive ? '🔒 ' : '') + emp.name;
+                tag.addEventListener('click', () => toggleSchedulerName(emp.name));
+                grid.appendChild(tag);
+            });
+        }
+
+        function updateSchedulerHeader() {
+            const el = document.getElementById('hdrPeriods');
+            if (el) el.textContent = rows.length;
+        }
+
+        function toggleSchedulerName(empName) {
+            if (!activeRowId) { toast('اضغط على صف في الجدول أولاً', 'amber'); return; }
+            const row = rows.find(r => r.id === activeRowId);
+            if (!row) return;
+            if (row.names.has(empName)) {
+                row.names.delete(empName);
+            } else {
+                // منع الإضافة إذا كان الموظف موجودًا في أي صف آخر
+                const alreadyUsed = rows.some(r => r.id !== activeRowId && r.names.has(empName));
+                if (alreadyUsed) {
+                    toast(`🔒 ${empName} محجوز في فترة أخرى`, 'red');
+                    return;
+                }
+                if (isEmployeeOnLeave(empName, row.date)) {
+                    toast(`🚫 ${empName} في إجازة بتاريخ ${row.date}`, 'red');
+                    return;
+                }
+                row.names.add(empName);
+            }
+            renderSchedulerTable();
+            renderSchedulerBank();
+        }
+
+        function removeSchedulerPill(rowId, empName) {
+            const row = rows.find(r => r.id === rowId);
+            if (row) { row.names.delete(empName);
+                renderSchedulerTable();
+                renderSchedulerBank(); }
+        }
+
+        function setSchedulerActive(id) { activeRowId = id;
+            renderSchedulerTable();
+            renderSchedulerBank(); }
+
+        function addSchedulerRow() {
+            const today = new Date().toISOString().split('T')[0];
+            rows.push({ id: ++rowCounter, date: today, period: PERIODS[0], names: new Set(), time: '08:00' });
+            activeRowId = rowCounter;
+            renderSchedulerTable();
+            renderSchedulerBank();
+            updateSchedulerHeader();
+        }
+
+        function deleteSchedulerRow(id) {
+            rows = rows.filter(r => r.id !== id);
+            if (activeRowId === id) activeRowId = rows.length ? rows[rows.length - 1].id : null;
+            renderSchedulerTable();
+            renderSchedulerBank();
+            updateSchedulerHeader();
+        }
+
+        function resetSchedulerBank() {
+            rows.forEach(r => r.names.clear());
+            renderSchedulerTable();
+            renderSchedulerBank();
+            toast('تم إعادة تعيين الأسماء');
+        }
+
+        function clearSchedulerAll() {
+            if (!confirm('مسح جميع بيانات الجدولة؟')) return;
+            rows = [];
+            rowCounter = 0;
+            activeRowId = null;
+            localStorage.removeItem('sched_v3');
+            addSchedulerRow();
+            toast('تم المسح');
+        }
+
+        function saveSchedulerLS() {
+            const data = rows.map(r => ({ id: r.id, date: r.date, period: r.period, names: [...r.names], time: r.time }));
+            localStorage.setItem('sched_v3', JSON.stringify({ rows: data, counter: rowCounter }));
+            toast('تم الحفظ ✓', 'green');
+        }
+
+        function loadSchedulerLS() {
+            try {
+                const raw = localStorage.getItem('sched_v3');
+                if (!raw) return;
+                const saved = JSON.parse(raw);
+                rowCounter = saved.counter || 0;
+                rows = (saved.rows || []).map(r => ({ ...r, names: new Set(r.names) }));
+                if (rows.length) activeRowId = rows[rows.length - 1].id;
+            } catch (e) { console.warn('load error', e); }
+        }
+
+        function generateSchedulerText() {
+            let text = '📋 جدول الدوام\n';
+            text += '═'.repeat(30) + '\n';
+            rows.forEach((row, i) => {
+                const dateStr = row.date || '—';
+                text += `🔹 الفترة ${i+1}: ${row.period}\n`;
+                text += `📅 ${dateStr}  ⏰ ${row.time}\n`;
+                text += `👥 الأفراد (${row.names.size}):\n`;
+                if (row.names.size === 0) text += '   (لا يوجد)\n';
+                else [...row.names].forEach(n => text += `   - ${n}\n`);
+                text += '\n';
+            });
+            text += '═'.repeat(30) + '\n';
+            const totalAssigned = rows.reduce((sum, r) => sum + r.names.size, 0);
+            text += `📊 إجمالي الفترات: ${rows.length} | الأفراد الموزعين: ${totalAssigned}`;
+            return text;
+        }
+
+        function copySchedulerText() {
+            const text = generateSchedulerText();
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => toast('تم نسخ الجدول ✓', 'green'));
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                toast('تم نسخ الجدول ✓', 'green');
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        //  TOAST
+        // ═══════════════════════════════════════════
+        let toastTimer;
+
+        function toast(msg, type = '') {
+            const el = document.getElementById('toast');
+            clearTimeout(toastTimer);
+            el.textContent = msg;
+            el.className = 'toast' + (type ? ' ' + type : '') + ' show';
+            toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+        }
+
+        // ═══════════════════════════════════════════
+        //  EVENT LISTENERS
+        // ═══════════════════════════════════════════
+        document.getElementById('priorityModal').addEventListener('click', function(e) { if (e.target === this) this
+                .style.display = 'none'; });
+        document.getElementById('schedulerModal').addEventListener('click', function(e) { if (e.target === this) this
+                .style.display = 'none'; });
         document.addEventListener('keyup', function(e) {
-            if (e.key === 'Enter' && document.getElementById('priorityPinInput') && document.getElementById(
-                    'priorityModal').style.display === 'flex') {
-                checkPriorityPin();
+            if (e.key === 'Enter') {
+                if (document.getElementById('priorityPinInput') && document.getElementById('priorityModal').style
+                    .display === 'flex') checkPriorityPin();
+                if (document.getElementById('schedulerPinInput') && document.getElementById('schedulerModal').style
+                    .display === 'flex') checkSchedulerPin();
+            }
+        });
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault();
+                saveSchedulerLS(); }
+            if (e.key === 'Escape') {
+                document.getElementById('schedulerModal').style.display = 'none';
+                document.getElementById('priorityModal').style.display = 'none';
             }
         });
     </script>
