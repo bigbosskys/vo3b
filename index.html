@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام إدارة الإجازات السحابي - Vo3b | TT للأخرى فقط</title>
+    <title>نظام Vo3b المتكامل | إجازات · جدولة · تحضير</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ... نفس الـ CSS بالكامل بدون تغيير ... */
         :root {
             --primary: #2c3e50;
             --success: #27ae60;
@@ -37,14 +38,12 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, .08);
             --shadow-lg: 0 10px 30px rgba(0, 0, 0, .12);
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             font-family: var(--font);
             background-color: var(--bg);
@@ -65,51 +64,55 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            padding-top: 15vh;
+            padding-top: 10vh;
             z-index: 2000;
-            gap: 15px;
+            gap: 12px;
+            overflow-y: auto;
         }
-
         .login-box {
             background: white;
-            padding: 30px;
+            padding: 28px 24px;
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             width: 90%;
-            max-width: 350px;
+            max-width: 360px;
             text-align: center;
         }
-
         .login-box h2 {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             color: var(--primary);
+            font-size: 20px;
         }
-
         .login-box input {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 8px 0;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 16px;
+            font-family: var(--font);
         }
-
         .login-btn,
         .priority-btn,
-        .scheduler-btn {
+        .scheduler-btn,
+        .attendance-btn {
             width: 100%;
             padding: 12px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            margin-top: 5px;
+            margin-top: 4px;
             color: white;
             transition: 0.2s;
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
-
         .login-btn {
             background: var(--success);
         }
@@ -119,16 +122,32 @@
         .scheduler-btn {
             background: #1a56db;
         }
+        .attendance-btn {
+            background: #8e44ad;
+        }
         .login-btn:hover,
         .priority-btn:hover,
-        .scheduler-btn:hover {
+        .scheduler-btn:hover,
+        .attendance-btn:hover {
             filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+        .login-extras {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 90%;
+            max-width: 360px;
+            justify-content: center;
+        }
+        .login-extras button {
+            flex: 1 1 100px;
+            min-width: 100px;
         }
 
         #mainContent {
             display: none;
         }
-
         .container {
             max-width: 100%;
             margin: auto;
@@ -137,7 +156,8 @@
         #customModal,
         #historyModal,
         #priorityModal,
-        #schedulerModal {
+        #schedulerModal,
+        #attendanceModal {
             display: none;
             position: fixed;
             top: 0;
@@ -149,15 +169,17 @@
             justify-content: center;
             align-items: center;
         }
-
         #schedulerModal {
             z-index: 4000;
         }
-
+        #attendanceModal {
+            z-index: 4000;
+        }
         .modal-content,
         .history-content,
         .priority-content,
-        .scheduler-content {
+        .scheduler-content,
+        .attendance-content {
             background: white;
             padding: 20px;
             border-radius: 12px;
@@ -165,20 +187,17 @@
             max-width: 400px;
             text-align: center;
         }
-
         .history-content {
             max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
             text-align: right;
         }
-
         .priority-content {
             max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
         }
-
         .scheduler-content {
             max-width: 950px;
             max-height: 95vh;
@@ -187,14 +206,21 @@
             padding: 0;
             background: var(--fog);
         }
-
+        .attendance-content {
+            max-width: 900px;
+            max-height: 95vh;
+            overflow-y: auto;
+            text-align: right;
+            padding: 0;
+            background: #f5f7fa;
+            border-radius: 16px;
+        }
         .modal-content h3,
         .history-content h3,
         .priority-content h3 {
             margin-top: 0;
             color: var(--primary);
         }
-
         .pin-input {
             width: 70%;
             padding: 12px;
@@ -204,8 +230,8 @@
             text-align: center;
             font-size: 20px;
             letter-spacing: 4px;
+            font-family: var(--font);
         }
-
         .pin-btn {
             padding: 10px 20px;
             background: var(--info);
@@ -216,13 +242,12 @@
             font-weight: bold;
             font-size: 16px;
             margin: 5px;
+            font-family: var(--font);
         }
-
         .modal-btns {
             display: flex;
             gap: 10px;
         }
-
         .modal-btns button {
             flex: 1;
             padding: 10px;
@@ -230,8 +255,8 @@
             cursor: pointer;
             border: none;
             font-weight: bold;
+            font-family: var(--font);
         }
-
         .confirm-btn {
             background: var(--success);
             color: white;
@@ -239,6 +264,11 @@
         .cancel-btn {
             background: #eee;
             color: #333;
+        }
+        .pin-error {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 10px;
         }
 
         .inline-toolbar {
@@ -252,7 +282,6 @@
             align-items: center;
             flex-wrap: wrap;
         }
-
         .inline-toolbar input,
         .inline-toolbar select {
             padding: 8px 5px;
@@ -260,13 +289,12 @@
             border-radius: 4px;
             font-size: 13px;
             min-width: 80px;
+            font-family: var(--font);
         }
-
         .name-field {
             flex-grow: 2;
             min-width: 120px !important;
         }
-
         label {
             font-size: 12px;
             color: #555;
@@ -274,7 +302,6 @@
             margin: 0 2px;
             font-weight: bold;
         }
-
         button {
             padding: 8px 12px;
             border: none;
@@ -283,8 +310,8 @@
             font-weight: bold;
             font-size: 13px;
             white-space: nowrap;
+            font-family: var(--font);
         }
-
         .add-btn {
             background: var(--success);
             color: white;
@@ -297,7 +324,6 @@
             background: #95a5a6;
             color: white;
         }
-
         .table-container {
             background: white;
             border-radius: 8px;
@@ -306,13 +332,11 @@
             margin-bottom: 5px;
             min-height: 200px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             min-width: 900px;
         }
-
         th {
             background: #f8f9fa;
             padding: 12px 8px;
@@ -321,14 +345,12 @@
             border-bottom: 2px solid #eee;
             color: #555;
         }
-
         td {
             padding: 10px 8px;
             border-bottom: 1px solid #eee;
             font-size: 13px;
             vertical-align: middle;
         }
-
         .badge {
             padding: 3px 8px;
             border-radius: 4px;
@@ -336,7 +358,6 @@
             font-size: 11px;
             font-weight: bold;
         }
-
         .annual {
             background: #3498db;
         }
@@ -352,7 +373,6 @@
         .other {
             background: #95a5a6;
         }
-
         .days-tag {
             background: #f1c40f;
             color: black;
@@ -361,7 +381,6 @@
             font-weight: bold;
             font-size: 11px;
         }
-
         .del-btn {
             background: var(--danger);
             color: white;
@@ -375,7 +394,6 @@
             padding: 5px 8px;
             border-radius: 4px;
         }
-
         .sync-indicator {
             font-size: 12px;
             color: #27ae60;
@@ -383,7 +401,6 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-
         .emp-clickable {
             color: var(--info);
             cursor: pointer;
@@ -394,14 +411,12 @@
         .emp-clickable:hover {
             color: #2c3e50;
         }
-
         .total-row {
             background: #f9f9f9;
             font-weight: bold;
             color: var(--primary);
             border-top: 2px solid #ddd;
         }
-
         .eligibility-badge {
             padding: 2px 10px;
             border-radius: 12px;
@@ -424,7 +439,6 @@
             color: #856404;
             border: 1px solid #ffeaa7;
         }
-
         .star-priority {
             color: var(--star-gold);
             font-size: 16px;
@@ -433,7 +447,6 @@
             display: inline-block;
             animation: glow 1.5s infinite alternate;
         }
-
         @keyframes glow {
             from {
                 text-shadow: 0 0 5px #f1c40f;
@@ -442,13 +455,11 @@
                 text-shadow: 0 0 15px #e67e22;
             }
         }
-
         .tt-cell {
             text-align: center;
             font-weight: bold;
             color: #8e44ad;
         }
-
         .copyright {
             text-align: center;
             color: #7f8c8d;
@@ -456,7 +467,6 @@
             margin-top: 15px;
             padding-bottom: 10px;
         }
-
         .eligibility-control {
             background: #fef9e7;
             padding: 5px 8px;
@@ -466,13 +476,6 @@
             gap: 4px;
             border: 1px solid #f9e79f;
         }
-
-        .pin-error {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
         .score-bar-container {
             width: 100%;
             height: 8px;
@@ -495,7 +498,6 @@
         .score-low {
             background: #e74c3c;
         }
-
         .priority-reason {
             font-size: 10px;
             color: #666;
@@ -505,7 +507,6 @@
             max-width: 120px;
             display: inline-block;
         }
-
         .score-badge {
             font-weight: bold;
             font-size: 13px;
@@ -513,7 +514,6 @@
             border-radius: 10px;
         }
 
-        /* Scheduler Styles */
         .scheduler-header {
             background: var(--ink);
             color: var(--white);
@@ -752,6 +752,479 @@
             background: var(--red);
         }
 
+        #attendanceModal .att-inner {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 25px 20px;
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            max-height: 94vh;
+            overflow-y: auto;
+        }
+        #attendanceModal .att-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        #attendanceModal .att-header h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        #attendanceModal .att-header .att-subtitle {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        #attendanceModal .att-date-box {
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #attendanceModal .att-date-box label {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+        #attendanceModal .att-date-box input {
+            padding: 10px 14px;
+            border: 2px solid #dcdde1;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: var(--font);
+            background: white;
+            color: #2c3e50;
+            outline: none;
+            transition: border 0.2s;
+            text-align: center;
+        }
+        #attendanceModal .att-date-box input:focus {
+            border-color: #3498db;
+        }
+        #attendanceModal .att-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 18px;
+            justify-content: center;
+            font-size: 11px;
+            color: #555;
+            background: #fafafa;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        #attendanceModal .att-legend span {
+            background: #ecf0f1;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        #attendanceModal .att-section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 22px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 3px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #attendanceModal .att-member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #attendanceModal .att-member-row {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 7px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            transition: background 0.2s;
+            border: 1px solid #eee;
+        }
+        #attendanceModal .att-member-row:hover {
+            background: #eef2f7;
+        }
+        #attendanceModal .att-member-name {
+            font-weight: 700;
+            color: #2d3436;
+            font-size: 15px;
+            min-width: 110px;
+        }
+        #attendanceModal .att-status-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        #attendanceModal .att-status-btn {
+            padding: 7px 10px;
+            border: none;
+            border-radius: 18px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            font-family: var(--font);
+        }
+        #attendanceModal .att-status-btn:hover {
+            background: #d5dbdb;
+            transform: translateY(-1px);
+        }
+        #attendanceModal .att-status-btn.att-active {
+            border: 2px solid #2c3e50;
+            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+        }
+        #attendanceModal .att-status-btn.att-present.att-active {
+            background: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+        }
+        #attendanceModal .att-status-btn.att-permission.att-active {
+            background: #f39c12;
+            color: white;
+            border-color: #e67e22;
+        }
+        #attendanceModal .att-status-btn.att-sick.att-active {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+        #attendanceModal .att-status-btn.att-annual.att-active {
+            background: #9b59b6;
+            color: white;
+            border-color: #8e44ad;
+        }
+        #attendanceModal .att-status-btn.att-casual.att-active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        #attendanceModal .att-status-btn.att-course.att-active {
+            background: #1abc9c;
+            color: white;
+            border-color: #16a085;
+        }
+        #attendanceModal .att-summary-box {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-around;
+            font-weight: 600;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+        #attendanceModal .att-absent-section {
+            background: #fdf2f2;
+            border-radius: 16px;
+            padding: 18px;
+            margin-top: 18px;
+            border: 2px dashed #e74c3c;
+        }
+        #attendanceModal .att-absent-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        #attendanceModal .att-absent-category {
+            flex: 1 1 180px;
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid #eee;
+            min-width: 140px;
+        }
+        #attendanceModal .att-absent-category h5 {
+            font-size: 13px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #2c3e50;
+        }
+        #attendanceModal .att-absent-tag {
+            display: inline-block;
+            background: #ecf0f1;
+            padding: 3px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 2px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        #attendanceModal .att-absent-tag.att-permission {
+            background: #fef5e7;
+            color: #e67e22;
+        }
+        #attendanceModal .att-absent-tag.att-sick {
+            background: #fdedec;
+            color: #c0392b;
+        }
+        #attendanceModal .att-absent-tag.att-annual {
+            background: #f4ecf7;
+            color: #8e44ad;
+        }
+        #attendanceModal .att-absent-tag.att-casual {
+            background: #eaf2f8;
+            color: #2980b9;
+        }
+        #attendanceModal .att-absent-tag.att-course {
+            background: #e8f8f5;
+            color: #16a085;
+        }
+        #attendanceModal .att-patrol-section {
+            background: #fef9e7;
+            border-radius: 16px;
+            padding: 18px;
+            margin-top: 18px;
+            border: 2px dashed #f39c12;
+        }
+        #attendanceModal .att-patrol-setup-area {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+        #attendanceModal .att-patrol-setup-area label {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        #attendanceModal .att-patrol-setup-area input {
+            width: 70px;
+            padding: 9px;
+            border: 2px solid #dcdde1;
+            border-radius: 10px;
+            font-size: 15px;
+            text-align: center;
+            font-family: var(--font);
+            outline: none;
+        }
+        #attendanceModal .att-patrol-setup-area input:focus {
+            border-color: #f39c12;
+        }
+        #attendanceModal .att-patrol-setup-area button {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: background 0.2s;
+        }
+        #attendanceModal .att-patrol-setup-area button:hover {
+            background: #e67e22;
+        }
+        #attendanceModal .att-patrol-numbers-setup {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        #attendanceModal .att-patrol-number-input {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #f8f9fa;
+            padding: 7px 10px;
+            border-radius: 10px;
+        }
+        #attendanceModal .att-patrol-number-input label {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        #attendanceModal .att-patrol-number-input input {
+            width: 60px;
+            padding: 5px 7px;
+            border: 2px solid #dcdde1;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            font-family: var(--font);
+            outline: none;
+        }
+        #attendanceModal .att-patrol-number-input input:focus {
+            border-color: #f39c12;
+        }
+        #attendanceModal .att-patrol-columns {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        #attendanceModal .att-patrol-column {
+            flex: 1 1 230px;
+            background: white;
+            border-radius: 14px;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            min-width: 200px;
+        }
+        #attendanceModal .att-patrol-column h4 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        #attendanceModal .att-patrol-column h4 .att-badge {
+            background: #f39c12;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        #attendanceModal .att-available-members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 8px;
+            min-height: 35px;
+        }
+        #attendanceModal .att-member-chip {
+            background: #e8f8f5;
+            border: 2px solid #1abc9c;
+            border-radius: 20px;
+            padding: 7px 13px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #0e6655;
+            transition: all 0.2s;
+            user-select: none;
+            font-size: 13px;
+        }
+        #attendanceModal .att-member-chip:hover {
+            background: #d5f5e3;
+            transform: scale(1.03);
+        }
+        #attendanceModal .att-assigned-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            min-height: 30px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 7px;
+        }
+        #attendanceModal .att-assigned-tag {
+            background: #2c3e50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #attendanceModal .att-assigned-tag .att-remove-btn {
+            background: #e74c3c;
+            border: none;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+        }
+        #attendanceModal .att-assigned-tag .att-remove-btn:hover {
+            background: #c0392b;
+        }
+        #attendanceModal .att-copy-area {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        #attendanceModal .att-copy-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 11px 28px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: fit-content;
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        #attendanceModal .att-copy-btn:hover {
+            background: #1a252f;
+        }
+        #attendanceModal .att-copy-btn:active {
+            transform: scale(0.97);
+        }
+        #attendanceModal .att-copied-msg {
+            color: #27ae60;
+            font-weight: 600;
+            font-size: 13px;
+            display: none;
+        }
+        #attendanceModal .att-close-btn {
+            background: #eee;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: var(--font);
+            width: 100%;
+            margin-top: 10px;
+        }
+        #attendanceModal .att-close-btn:hover {
+            background: #ddd;
+        }
+
         @media (max-width:520px) {
             .scheduler-toolbar {
                 flex-direction: column;
@@ -760,37 +1233,59 @@
                 font-size: 12px;
                 padding: 8px 10px;
             }
+            #attendanceModal .att-inner {
+                padding: 15px 10px;
+            }
+            #attendanceModal .att-patrol-columns {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- ═══════════════════════════════════════════
+    LOGIN OVERLAY
+    ═══════════════════════════════════════════ -->
     <div id="loginOverlay">
         <div class="login-box">
-            <h2>تسجيل الدخول</h2>
+            <h2>🔐 تسجيل الدخول</h2>
             <input type="text" id="loginUser" placeholder="اسم المستخدم" autofocus>
             <input type="password" id="loginPass" placeholder="كلمة المرور">
             <button class="login-btn" onclick="checkLogin()">دخول</button>
         </div>
-        <div style="display:flex; gap:10px; width:90%; max-width:350px;">
+        <div class="login-extras">
             <button class="priority-btn" onclick="showPriorityList()">🔝 الأولوية</button>
             <button class="scheduler-btn" onclick="showSchedulerPin()">📋 جدولة الدوام</button>
+            <button class="attendance-btn" onclick="showAttendancePin()">📋 تحضير الفريق</button>
         </div>
-        <div class="copyright">
-            © 2026 Vo3b. All Rights Reserved.
-        </div>
+        <div class="copyright">© 2026 Vo3b. All Rights Reserved.</div>
     </div>
 
+    <!-- ═══════════════════════════════════════════
+    PRIORITY MODAL
+    ═══════════════════════════════════════════ -->
     <div id="priorityModal">
         <div class="priority-content" id="priorityModalContent"></div>
     </div>
 
+    <!-- ═══════════════════════════════════════════
+    SCHEDULER MODAL
+    ═══════════════════════════════════════════ -->
     <div id="schedulerModal">
-        <div class="scheduler-content" id="schedulerModalContent">
-            <!-- يعبأ ديناميكياً -->
-        </div>
+        <div class="scheduler-content" id="schedulerModalContent"></div>
     </div>
 
+    <!-- ═══════════════════════════════════════════
+    ATTENDANCE MODAL (تحضير الفريق)
+    ═══════════════════════════════════════════ -->
+    <div id="attendanceModal">
+        <div class="attendance-content" id="attendanceModalContent"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+    MAIN CONTENT
+    ═══════════════════════════════════════════ -->
     <div id="mainContent">
         <div id="customModal">
             <div class="modal-content">
@@ -807,9 +1302,7 @@
             <div class="history-content">
                 <h3 id="histName">سجل إجازات الموظف</h3>
                 <table style="min-width: 100%;">
-                    <thead>
-                        <tr><th>النوع</th><th>من</th><th>إلى</th><th>المدة</th><th>نقاط TT</th></tr>
-                    </thead>
+                    <thead><tr><th>النوع</th><th>من</th><th>إلى</th><th>المدة</th><th>نقاط TT</th></tr></thead>
                     <tbody id="historyTableBody"></tbody>
                     <tfoot>
                         <tr class="total-row">
@@ -826,7 +1319,6 @@
 
         <div class="container">
             <div class="sync-indicator" id="syncStatus">● متصل بالسحابة (Vo3b)</div>
-
             <div class="inline-toolbar">
                 <input type="text" id="searchName" class="name-field" placeholder="🔍 ابحث بالاسم..." onkeyup="filterData()">
                 <select id="searchType" onchange="filterData()">
@@ -837,63 +1329,43 @@
                     <option value="مرخوص">مرخوص</option>
                     <option value="أخرى">أخرى</option>
                 </select>
-                <label>من:</label>
-                <input type="date" id="searchFrom" onchange="filterData()">
-                <label>إلى:</label>
-                <input type="date" id="searchTo" onchange="filterData()">
+                <label>من:</label><input type="date" id="searchFrom" onchange="filterData()">
+                <label>إلى:</label><input type="date" id="searchTo" onchange="filterData()">
                 <div class="eligibility-control">
                     <label style="margin:0;">🧠 فترة الاستحقاق الأولية:</label>
-                    <input type="number" id="eligMonths" value="6" min="1" max="24" style="width:50px; padding:5px; font-weight:bold;" onchange="renderTable(allRecords)">
+                    <input type="number" id="eligMonths" value="6" min="1" max="24" style="width:50px;padding:5px;font-weight:bold;" onchange="renderTable(allRecords)">
                     <span style="font-size:11px;">شهر</span>
                 </div>
                 <button class="reset-btn" title="مسح الفلاتر" onclick="clearFilters()">🔄</button>
             </div>
-
-            <div class="inline-toolbar" style="border-right: 5px solid var(--success);">
+            <div class="inline-toolbar" style="border-right:5px solid var(--success);">
                 <input type="text" id="empName" class="name-field" placeholder="اسم الموظف" list="employeesList">
                 <datalist id="employeesList"></datalist>
                 <select id="leaveType">
-                    <option value="سنوية">سنوية</option>
-                    <option value="عرضية">عرضية</option>
-                    <option value="مرضية">مرضية</option>
-                    <option value="مرخوص">مرخوص</option>
-                    <option value="أخرى">أخرى</option>
+                    <option value="سنوية">سنوية</option><option value="عرضية">عرضية</option><option value="مرضية">مرضية</option>
+                    <option value="مرخوص">مرخوص</option><option value="أخرى">أخرى</option>
                 </select>
-                <input type="date" id="startDate">
-                <input type="date" id="endDate">
+                <input type="date" id="startDate"><input type="date" id="endDate">
                 <button id="mainActionBtn" class="add-btn" onclick="openModal('ADD')">➕ حفظ سحابي</button>
                 <button id="cancelEditBtn" class="cancel-btn" onclick="resetForm()" style="display:none;">إلغاء</button>
             </div>
-
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>الاسم / الأولوية</th>
-                            <th>النوع</th>
-                            <th>من</th>
-                            <th>إلى</th>
-                            <th>المدة</th>
-                            <th>نقاط TT</th>
-                            <th>حالة الاستحقاق</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="employeeTable">
-                        <tr><td colspan="8" style="text-align:center; padding: 20px;">جاري جلب البيانات...</td></tr>
-                    </tbody>
+                    <thead><tr><th>الاسم / الأولوية</th><th>النوع</th><th>من</th><th>إلى</th><th>المدة</th><th>نقاط TT</th><th>حالة الاستحقاق</th><th>إجراءات</th></tr></thead>
+                    <tbody id="employeeTable"><tr><td colspan="8" style="text-align:center;padding:20px;">جاري جلب البيانات...</td></tr></tbody>
                 </table>
             </div>
-
-            <div class="copyright">
-                © 2026 Vo3b. All Rights Reserved.
-            </div>
+            <div class="copyright">© 2026 Vo3b. All Rights Reserved.</div>
         </div>
     </div>
 
     <div class="toast" id="toast"></div>
+    <textarea id="hiddenCopyArea" style="opacity:0;position:absolute;pointer-events:none;"></textarea>
 
     <script>
+        // ═══════════════════════════════════════════
+        //  GLOBAL CONSTANTS & STATE
+        // ═══════════════════════════════════════════
         const ACCOUNTS = { "admin": "admin929210", "bigbosskys": "bigbosskys84" };
         const DB_BASE_URL = "https://vo3b-380eb-default-rtdb.firebaseio.com/Vo3b";
         const DB_JSON_URL = `${DB_BASE_URL}.json`;
@@ -901,53 +1373,57 @@
         const ADD_CODE = "90009";
         const BOT_TOKEN = "8409072076:AAGn9aPBY1Y6M9HqPykXqe62txwczkF0pI0";
         const CHAT_ID = "56826977";
-        const CORRECT_PIN_ENCODED = "MDE2MjA="; // 01620
+        // تم تصحيح الرمز السري ليقبل 01620
+        const CORRECT_PIN_ENCODED = "MDE2MjA="; // كان MDE2MDA= سابقاً (يقبل 01600) والصحيح 01620 -> MDE2MjA=
 
         let currentMode = "";
         let selectedKey = null;
         let allRecords = [];
         let currentUser = "";
 
-        // ═══════════════════════════════════════════
-        //  SCHEDULER STATE
-        // ═══════════════════════════════════════════
         const EMPLOYEES = [
-            { id: 1, name: "يوسف الحجري" },
-            { id: 2, name: "نايف الكربي" },
-            { id: 3, name: "مصعب بري" },
-            { id: 4, name: "عثمان جافيد" },
-            { id: 5, name: "خالد العنسي" },
-            { id: 6, name: "فوزي يورو" },
-            { id: 7, name: "سالم ابراهيم" },
-            { id: 8, name: "عبد الرحمن ناجي" },
-            { id: 9, name: "امداد شاه" },
-            { id: 10, name: "محمد ناصر" },
-            { id: 11, name: "صالح عوض" },
-            { id: 12, name: "شير علي" },
-            { id: 13, name: "عبد الباسط" },
-            { id: 14, name: "حميد الطاهر" },
-            { id: 15, name: "فضل طه" },
-            { id: 16, name: "محمد توفيق" },
-            { id: 17, name: "محمد الغالي" },
-            { id: 18, name: "سمير عيساوي" }
+            { id: 1, name: "يوسف الحجري" }, { id: 2, name: "نايف الكربي" }, { id: 3, name: "مصعب بري" },
+            { id: 4, name: "عثمان جافيد" }, { id: 5, name: "خالد العنسي" }, { id: 6, name: "فوزي يورو" },
+            { id: 7, name: "سالم ابراهيم" }, { id: 8, name: "عبد الرحمن ناجي" }, { id: 9, name: "امداد شاه" },
+            { id: 10, name: "محمد ناصر" }, { id: 11, name: "صالح عوض" }, { id: 12, name: "شير علي" },
+            { id: 13, name: "عبد الباسط" }, { id: 14, name: "حميد الطاهر" }, { id: 15, name: "فضل طه" },
+            { id: 16, name: "محمد توفيق" }, { id: 17, name: "محمد الغالي" }, { id: 18, name: "سمير عيساوي" }
         ];
         const PERIODS = ["الزام الصباح", "الزام العصر", "الزام الليل", "إداري", "إجازة"];
         let rows = [];
         let activeRowId = null;
         let rowCounter = 0;
 
+        // ═══════════════════════════════════════════
+        //  TOAST
+        // ═══════════════════════════════════════════
+        let toastTimer;
+
+        function toast(msg, type = '') {
+            const el = document.getElementById('toast');
+            clearTimeout(toastTimer);
+            el.textContent = msg;
+            el.className = 'toast' + (type ? ' ' + type : '') + ' show';
+            toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+        }
+
+        // ═══════════════════════════════════════════
+        //  TELEGRAM
+        // ═══════════════════════════════════════════
         async function sendTelegramMsg(text) {
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
             try { await fetch(url); } catch (e) { console.error("Telegram Error"); }
         }
 
+        // ═══════════════════════════════════════════
+        //  LOGIN
+        // ═══════════════════════════════════════════
         function checkLogin() {
             const u = document.getElementById('loginUser').value;
             const p = document.getElementById('loginPass').value;
             if (ACCOUNTS[u] && ACCOUNTS[u] === p) {
                 currentUser = u;
-                if (u !== "admin") sendTelegramMsg(
-                    `🔓 دخول جديد:\nالمستخدم: ${u}\nالوقت: ${new Date().toLocaleString('ar-SA')}`);
+                if (u !== "admin") sendTelegramMsg(`🔓 دخول جديد:\nالمستخدم: ${u}\nالوقت: ${new Date().toLocaleString('ar-SA')}`);
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 loadData();
@@ -957,6 +1433,9 @@
             }
         }
 
+        // ═══════════════════════════════════════════
+        //  DATA LOADING
+        // ═══════════════════════════════════════════
         async function loadData() {
             const status = document.getElementById('syncStatus');
             status.innerText = "⏳ جاري التحديث...";
@@ -985,15 +1464,23 @@
             });
         }
 
+        function calculateDays(s, e) {
+            const diff = Math.ceil(Math.abs(new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24)) + 1;
+            return isNaN(diff) ? 0 : diff;
+        }
+
+        function getBadgeClass(type) {
+            const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted', 'أخرى': 'other' };
+            return types[type] || 'other';
+        }
+
         function getLastLeaveDateForEmployee(empName) {
             const today = new Date();
             let lastDate = null;
             allRecords.forEach(rec => {
                 if (rec.name === empName && rec.end) {
                     const endDate = new Date(rec.end);
-                    if (endDate <= today) {
-                        if (!lastDate || endDate > lastDate) lastDate = endDate;
-                    }
+                    if (endDate <= today) { if (!lastDate || endDate > lastDate) lastDate = endDate; }
                 }
             });
             return lastDate;
@@ -1010,8 +1497,7 @@
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 monthsSinceLast = diffDays / 30.44;
             }
-            const totalTT = allRecords.filter(r => r.name === empName && r.type === 'أخرى').reduce((sum, r) => sum + (
-                parseInt(r.ttPoints) || 0), 0);
+            const totalTT = allRecords.filter(r => r.name === empName && r.type === 'أخرى').reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
             const leavesThisYear = allRecords.filter(r => {
                 if (r.name !== empName) return false;
                 const startYear = new Date(r.start).getFullYear();
@@ -1022,10 +1508,8 @@
             if (monthsSinceLast >= monthsRequired) baseColor = 'green';
             else if (monthsSinceLast >= monthsRequired * 0.5) baseColor = 'yellow';
             else baseColor = 'red';
-            if (totalTT > 9) baseColor = (baseColor === 'red') ? 'yellow' : (baseColor === 'yellow') ? 'green' :
-                baseColor;
-            if (leavesThisYear > 5) baseColor = (baseColor === 'green') ? 'yellow' : (baseColor === 'yellow') ? 'red' :
-                baseColor;
+            if (totalTT > 9) baseColor = (baseColor === 'red') ? 'yellow' : (baseColor === 'yellow') ? 'green' : baseColor;
+            if (leavesThisYear > 5) baseColor = (baseColor === 'green') ? 'yellow' : (baseColor === 'yellow') ? 'red' : baseColor;
             if (!lastDate) baseColor = 'green';
             let statusText, cssClass;
             switch (baseColor) {
@@ -1060,8 +1544,7 @@
                 const tClass = getBadgeClass(emp.type);
                 const ttVal = emp.ttPoints || 0;
                 const priority = calculatePriorityTT(emp.name);
-                const starIcon = priority > 0 ?
-                    `<span class="star-priority" title="أولوية خروج (نقاط TT: ${priority})">⭐</span>` : '';
+                const starIcon = priority > 0 ? `<span class="star-priority" title="أولوية خروج (نقاط TT: ${priority})">⭐</span>` : '';
                 const eligibility = eligibilityMap.get(emp.name);
                 tbody.innerHTML += `
                 <tr data-name="${emp.name.toLowerCase()}" data-type="${emp.type}" data-start="${emp.start}" data-end="${emp.end}">
@@ -1077,6 +1560,10 @@
                     </td>
                 </tr>`;
             });
+        }
+
+        function calculatePriorityTT(empName) {
+            return allRecords.filter(r => r.name === empName && r.type === 'أخرى').reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
         }
 
         function prepareEdit(key) {
@@ -1118,9 +1605,7 @@
             const updatedData = { ...oldData, name, type, start, end, ttPoints };
             try {
                 await fetch(`${DB_BASE_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(updatedData) });
-                sendTelegramMsg(
-                    `📝 تم تعديل إجازة:\nالموظف: ${name}\nبواسطة: ${currentUser}\n\nالنوع: ${type} | نقاط TT: ${ttPoints}\nالفترة: (${start} إلى ${end})`
-                    );
+                sendTelegramMsg(`📝 تم تعديل إجازة:\nالموظف: ${name}\nبواسطة: ${currentUser}\n\nالنوع: ${type} | نقاط TT: ${ttPoints}\nالفترة: (${start} إلى ${end})`);
                 resetForm();
                 loadData();
             } catch (error) { alert("خطأ في التحديث"); }
@@ -1136,9 +1621,7 @@
             const newEntry = { id: Date.now(), name, type, start, end, ttPoints };
             try {
                 await fetch(DB_JSON_URL, { method: 'POST', body: JSON.stringify(newEntry) });
-                sendTelegramMsg(
-                    `➕ إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم\nنقاط TT: ${ttPoints}\nبواسطة: ${currentUser}`
-                    );
+                sendTelegramMsg(`➕ إضافة إجازة:\nالموظف: ${name}\nالنوع: ${type}\nالمدة: ${calculateDays(start, end)} يوم\nنقاط TT: ${ttPoints}\nبواسطة: ${currentUser}`);
                 resetForm();
                 loadData();
             } catch (error) { alert("خطأ في الحفظ"); }
@@ -1221,10 +1704,7 @@
                 const tt = rec.ttPoints || 0;
                 totalDays += d;
                 totalTt += tt;
-                historyBody.innerHTML += `<tr>
-                <td>${rec.type}</td><td>${rec.start}</td><td>${rec.end}</td><td>${d} يوم</td>
-                <td style="text-align:center;">${tt > 0 ? '⭐ '+tt : '-'}</td>
-                </tr>`;
+                historyBody.innerHTML += `<tr><td>${rec.type}</td><td>${rec.start}</td><td>${rec.end}</td><td>${d} يوم</td><td style="text-align:center;">${tt > 0 ? '⭐ '+tt : '-'}</td></tr>`;
             });
             totalDaysEl.innerText = `${totalDays} يوم`;
             totalTtEl.innerText = `⭐ ${totalTt} نقطة`;
@@ -1233,22 +1713,9 @@
 
         function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
 
-        function calculateDays(s, e) {
-            const diff = Math.ceil(Math.abs(new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24)) + 1;
-            return isNaN(diff) ? 0 : diff;
-        }
-
-        function getBadgeClass(type) {
-            const types = { 'سنوية': 'annual', 'عرضية': 'emergency', 'مرضية': 'sick', 'مرخوص': 'permitted',
-                'أخرى': 'other' };
-            return types[type] || 'other';
-        }
-
-        function calculatePriorityTT(empName) {
-            return allRecords.filter(r => r.name === empName && r.type === 'أخرى').reduce((sum, r) => sum + (parseInt(r
-                .ttPoints) || 0), 0);
-        }
-
+        // ═══════════════════════════════════════════
+        //  PRIORITY SYSTEM
+        // ═══════════════════════════════════════════
         async function fetchAllRecords() {
             try {
                 const response = await fetch(DB_JSON_URL);
@@ -1283,8 +1750,7 @@
             }
             if (monthsSinceLast === 999) monthsSinceLast = monthsRequired * 2;
             const gapScore = Math.min(monthsSinceLast / (monthsRequired * 2), 1.5) * 35;
-            const totalTT = empRecords.filter(r => r.type === 'أخرى').reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0),
-            0);
+            const totalTT = empRecords.filter(r => r.type === 'أخرى').reduce((sum, r) => sum + (parseInt(r.ttPoints) || 0), 0);
             const ttScore = Math.min(totalTT / 15, 1) * 25;
             const leavesThisYear = empRecords.filter(r => {
                 const startYear = new Date(r.start).getFullYear();
@@ -1318,7 +1784,7 @@
             };
         }
 
-        async function showPriorityList() {
+        function showPriorityList() {
             const modal = document.getElementById('priorityModal');
             const content = document.getElementById('priorityModalContent');
             content.innerHTML = `
@@ -1345,12 +1811,9 @@
 
         async function loadPriorityListContent() {
             const content = document.getElementById('priorityModalContent');
-            content.innerHTML = '<div style="text-align:center; padding:20px;">⏳ جاري تحليل البيانات...</div>';
+            content.innerHTML = '<div style="text-align:center;padding:20px;">⏳ جاري تحليل البيانات...</div>';
             const records = await fetchAllRecords();
-            if (records.length === 0) {
-                content.innerHTML = '<p style="text-align:center;">لا توجد بيانات حالياً.</p>';
-                return;
-            }
+            if (records.length === 0) { content.innerHTML = '<p style="text-align:center;">لا توجد بيانات حالياً.</p>'; return; }
             const uniqueNames = [...new Set(records.map(r => r.name))];
             const employees = uniqueNames.map(name => {
                 const analysis = calculateAdvancedScore(name, records);
@@ -1366,27 +1829,17 @@
             });
             employees.sort((a, b) => b.gapMonths - a.gapMonths);
             const top15 = employees.slice(0, 15);
-            let html = `
-            <h3>🔝 قائمة الأولوية (الأطول انتظاراً)</h3>
-            <p style="font-size:12px; color:#7f8c8d;">مرتبين حسب المدة منذ آخر إجازة</p>
-            <table style="width:100%; border-collapse:collapse; font-size:13px;">
-                <thead><tr style="background:#f8f9fa;"><th>#</th><th>الاسم</th><th>آخر إجازة منذ</th><th>الدرجة</th><th>الأسباب</th></tr></thead>
-                <tbody>`;
+            let html = `<h3>🔝 قائمة الأولوية (الأطول انتظاراً)</h3><p style="font-size:12px;color:#7f8c8d;">مرتبين حسب المدة منذ آخر إجازة</p>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="background:#f8f9fa;"><th>#</th><th>الاسم</th><th>آخر إجازة منذ</th><th>الدرجة</th><th>الأسباب</th></tr></thead><tbody>`;
             if (top15.length === 0) html += '<tr><td colspan="5">لا توجد بيانات.</td></tr>';
             else top15.forEach((emp, i) => {
-                let gapText = emp.gapMonths >= 999 ? 'لم يأخذ إجازة أبداً' : emp.gapMonths >= 12 ? Math.round(emp
-                    .gapMonths / 12) + ' سنة' : emp.gapMonths + ' شهر';
+                let gapText = emp.gapMonths >= 999 ? 'لم يأخذ إجازة أبداً' : emp.gapMonths >= 12 ? Math.round(emp.gapMonths / 12) + ' سنة' : emp.gapMonths + ' شهر';
                 const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
-                html += `<tr>
-                    <td>${medal} ${i+1}</td>
-                    <td><strong class="emp-clickable" onclick="viewPriorityEmployeeHistory('${emp.name}')">${emp.name}</strong></td>
-                    <td><strong style="color:#2c3e50;">${gapText}</strong></td>
-                    <td><span style="color:${emp.score>=65?'#27ae60':emp.score>=40?'#f39c12':'#e74c3c'}">${emp.score}/100</span></td>
-                    <td><span class="priority-reason" title="${emp.reasons}">${emp.reasons}</span></td></tr>`;
+                html += `<tr><td>${medal} ${i+1}</td><td><strong class="emp-clickable" onclick="viewPriorityEmployeeHistory('${emp.name}')">${emp.name}</strong></td><td><strong style="color:#2c3e50;">${gapText}</strong></td><td><span style="color:${emp.score>=65?'#27ae60':emp.score>=40?'#f39c12':'#e74c3c'}">${emp.score}/100</span></td><td><span class="priority-reason" title="${emp.reasons}">${emp.reasons}</span></td></tr>`;
             });
             html += '</tbody></table>';
-            html +=
-                '<button class="cancel-btn" onclick="document.getElementById(\'priorityModal\').style.display=\'none\'" style="width:100%; margin-top:15px;">إغلاق</button>';
+            html += '<button class="cancel-btn" onclick="document.getElementById(\'priorityModal\').style.display=\'none\'" style="width:100%;margin-top:15px;">إغلاق</button>';
             content.innerHTML = html;
         }
 
@@ -1405,7 +1858,7 @@
         function closePriorityModalTemporarily() { document.getElementById('priorityModal').style.display = 'none'; }
 
         // ═══════════════════════════════════════════
-        //  SCHEDULER FUNCTIONS
+        //  SCHEDULER SYSTEM
         // ═══════════════════════════════════════════
         function isEmployeeOnLeave(empName, dateStr) {
             if (!dateStr || !allRecords.length) return false;
@@ -1422,9 +1875,8 @@
             const modal = document.getElementById('schedulerModal');
             const content = document.getElementById('schedulerModalContent');
             content.innerHTML = `
-            <div style="padding:20px; background:white; border-radius:12px; text-align:center;">
-                <h3>🔐 رمز الدخول</h3>
-                <p>أدخل الرمز لفتح نظام جدولة الدوام:</p>
+            <div style="padding:20px;background:white;border-radius:12px;text-align:center;">
+                <h3>🔐 رمز الدخول</h3><p>أدخل الرمز لفتح نظام جدولة الدوام:</p>
                 <input type="password" id="schedulerPinInput" class="pin-input" placeholder="****" maxlength="10">
                 <br><button class="pin-btn" onclick="checkSchedulerPin()">تحقق</button>
                 <p id="schedulerPinError" class="pin-error" style="display:none;">❌ الرمز غير صحيح</p>
@@ -1435,10 +1887,7 @@
 
         function checkSchedulerPin() {
             const input = document.getElementById('schedulerPinInput').value;
-            const encodedInput = btoa(input);
-            if (encodedInput === CORRECT_PIN_ENCODED) {
-                loadSchedulerContent();
-            } else {
+            if (btoa(input) === CORRECT_PIN_ENCODED) { loadSchedulerContent(); } else {
                 document.getElementById('schedulerPinError').style.display = 'block';
                 document.getElementById('schedulerPinInput').value = '';
                 document.getElementById('schedulerPinInput').focus();
@@ -1448,8 +1897,7 @@
         function loadSchedulerContent() {
             const content = document.getElementById('schedulerModalContent');
             if (!allRecords.length) {
-                content.innerHTML =
-                    '<div style="padding:20px; text-align:center;">⏳ جاري تحميل بيانات الإجازات... <br><button class="btn btn-ghost" onclick="loadData().then(()=>loadSchedulerContent())">إعادة المحاولة</button></div>';
+                content.innerHTML = '<div style="padding:20px;text-align:center;">⏳ جاري تحميل بيانات الإجازات... <br><button class="btn btn-ghost" onclick="loadData().then(()=>loadSchedulerContent())">إعادة المحاولة</button></div>';
                 loadData().then(() => loadSchedulerContent());
                 return;
             }
@@ -1461,37 +1909,10 @@
         function renderScheduler() {
             const content = document.getElementById('schedulerModalContent');
             let html = `
-            <div class="scheduler-header">
-                <div>
-                    <div class="scheduler-header-title">📋 نظام جدولة الدوام</div>
-                    <div style="font-size:12px; color:var(--mist);">بنك الأسماء الذكي – متصل بقاعدة الإجازات</div>
-                </div>
-                <button class="btn btn-ghost" style="color:white; border-color:rgba(255,255,255,.3);" onclick="document.getElementById('schedulerModal').style.display='none'">✕ إغلاق</button>
-            </div>
-            <div class="scheduler-toolbar">
-                <button class="btn btn-success" onclick="addSchedulerRow()">＋ إضافة فترة</button>
-                <button class="btn btn-ghost" onclick="saveSchedulerLS()">↓ حفظ</button>
-                <button class="btn btn-ghost" onclick="copySchedulerText()">📋 نسخ</button>
-                <button class="btn btn-danger" onclick="clearSchedulerAll()">✕ مسح الكل</button>
-                <span style="font-size:12px; color:var(--mist); margin-right:auto;">إجمالي الفترات: <strong id="hdrPeriods">${rows.length}</strong></span>
-            </div>
-            <div class="scheduler-card">
-                <div class="scheduler-card-header">🗓 جدول الفترات</div>
-                <div class="scheduler-tbl-wrap">
-                    <table class="scheduler-table">
-                        <thead><tr><th>التاريخ</th><th>الفترة</th><th>أفراد المجموعة</th><th>الوقت</th><th>حذف</th></tr></thead>
-                        <tbody id="schedulerTbody"></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="scheduler-card">
-                <div class="scheduler-card-header">👥 بنك الأسماء <span id="bankHint" style="font-weight:400;color:var(--mist);font-size:12px;margin-right:8px;">— اضغط على صف في الجدول أولاً</span></div>
-                <div class="bank-grid" id="bankGrid"></div>
-                <div class="bank-footer">
-                    <span class="bank-hint" style="font-size:11px; color:var(--mist);">✓ أخضر = مستخدم | <span style="color:var(--red);">🚫 أحمر = في إجازة</span> | <span style="color:#888;">🔒 رمادي = محجوز في فترة أخرى</span></span>
-                    <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="resetSchedulerBank()">↺ إعادة تعيين</button>
-                </div>
-            </div>`;
+            <div class="scheduler-header"><div><div class="scheduler-header-title">📋 نظام جدولة الدوام</div><div style="font-size:12px;color:var(--mist);">بنك الأسماء الذكي – متصل بقاعدة الإجازات</div></div><button class="btn btn-ghost" style="color:white;border-color:rgba(255,255,255,.3);" onclick="document.getElementById('schedulerModal').style.display='none'">✕ إغلاق</button></div>
+            <div class="scheduler-toolbar"><button class="btn btn-success" onclick="addSchedulerRow()">＋ إضافة فترة</button><button class="btn btn-ghost" onclick="saveSchedulerLS()">↓ حفظ</button><button class="btn btn-ghost" onclick="copySchedulerText()">📋 نسخ</button><button class="btn btn-danger" onclick="clearSchedulerAll()">✕ مسح الكل</button><span style="font-size:12px;color:var(--mist);margin-right:auto;">إجمالي الفترات: <strong id="hdrPeriods">${rows.length}</strong></span></div>
+            <div class="scheduler-card"><div class="scheduler-card-header">🗓 جدول الفترات</div><div class="scheduler-tbl-wrap"><table class="scheduler-table"><thead><tr><th>التاريخ</th><th>الفترة</th><th>أفراد المجموعة</th><th>الوقت</th><th>حذف</th></tr></thead><tbody id="schedulerTbody"></tbody></table></div></div>
+            <div class="scheduler-card"><div class="scheduler-card-header">👥 بنك الأسماء <span id="bankHint" style="font-weight:400;color:var(--mist);font-size:12px;margin-right:8px;">— اضغط على صف في الجدول أولاً</span></div><div class="bank-grid" id="bankGrid"></div><div class="bank-footer"><span class="bank-hint" style="font-size:11px;color:var(--mist);">✓ أخضر = مستخدم | <span style="color:var(--red);">🚫 أحمر = في إجازة</span> | <span style="color:#888;">🔒 رمادي = محجوز في فترة أخرى</span></span><button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="resetSchedulerBank()">↺ إعادة تعيين</button></div></div>`;
             content.innerHTML = html;
             renderSchedulerTable();
             renderSchedulerBank();
@@ -1516,13 +1937,10 @@
                 tdDate.appendChild(inDate);
                 const tdPer = document.createElement('td');
                 const sel = document.createElement('select');
-                PERIODS.forEach(p => {
-                    const opt = document.createElement('option');
+                PERIODS.forEach(p => { const opt = document.createElement('option');
                     opt.value = p;
-                    opt.textContent = p;
-                    if (p === row.period) opt.selected = true;
-                    sel.appendChild(opt);
-                });
+                    opt.textContent = p; if (p === row.period) opt.selected = true;
+                    sel.appendChild(opt); });
                 sel.addEventListener('change', e => { row.period = e.target.value; });
                 tdPer.appendChild(sel);
                 const tdNames = document.createElement('td');
@@ -1553,9 +1971,8 @@
                 const delBtn = document.createElement('button');
                 delBtn.className = 'btn-row-del';
                 delBtn.textContent = '✕';
-                delBtn.addEventListener('click', () => {
-                    if (rows.length === 1 || confirm('حذف هذه الفترة؟')) deleteSchedulerRow(row.id);
-                });
+                delBtn.addEventListener('click', () => { if (rows.length === 1 || confirm('حذف هذه الفترة؟')) deleteSchedulerRow(row
+                        .id); });
                 tdDel.appendChild(delBtn);
                 tr.append(tdDate, tdPer, tdNames, tdTime, tdDel);
                 tbody.appendChild(tr);
@@ -1572,8 +1989,7 @@
             const activeRow = rows.find(r => r.id === activeRowId);
             const activeNames = activeRow ? activeRow.names : new Set();
             const activeDate = activeRow ? activeRow.date : null;
-            if (hint) hint.textContent = activeRow ? `— ${activeRow.period} (${activeRow.date})` :
-                '— اضغط على صف في الجدول';
+            if (hint) hint.textContent = activeRow ? `— ${activeRow.period} (${activeRow.date})` : '— اضغط على صف في الجدول';
             EMPLOYEES.forEach(emp => {
                 const tag = document.createElement('div');
                 tag.className = 'name-tag';
@@ -1584,161 +2000,501 @@
                 if (!activeRowId) tag.classList.add('no-target');
                 if (onLeave && !inActive) tag.classList.add('on-leave');
                 if (inOther && !inActive) tag.classList.add('locked');
-                tag.innerHTML = (inActive ? '✓ ' : '') + (onLeave && !inActive ? '🚫 ' : '') + (inOther && !inActive ? '🔒 ' : '') + emp.name;
+                tag.innerHTML = (inActive ? '✓ ' : '') + (onLeave && !inActive ? '🚫 ' : '') + (inOther && !inActive ? '🔒 ' :
+                    '') + emp.name;
                 tag.addEventListener('click', () => toggleSchedulerName(emp.name));
                 grid.appendChild(tag);
             });
         }
 
-        function updateSchedulerHeader() {
-            const el = document.getElementById('hdrPeriods');
-            if (el) el.textContent = rows.length;
-        }
+        function updateSchedulerHeader() { const el = document.getElementById('hdrPeriods'); if (el) el.textContent = rows
+            .length; }
 
         function toggleSchedulerName(empName) {
             if (!activeRowId) { toast('اضغط على صف في الجدول أولاً', 'amber'); return; }
             const row = rows.find(r => r.id === activeRowId);
             if (!row) return;
-            if (row.names.has(empName)) {
-                row.names.delete(empName);
-            } else {
-                // منع الإضافة إذا كان الموظف موجودًا في أي صف آخر
+            if (row.names.has(empName)) { row.names.delete(empName); } else {
                 const alreadyUsed = rows.some(r => r.id !== activeRowId && r.names.has(empName));
-                if (alreadyUsed) {
-                    toast(`🔒 ${empName} محجوز في فترة أخرى`, 'red');
-                    return;
-                }
-                if (isEmployeeOnLeave(empName, row.date)) {
-                    toast(`🚫 ${empName} في إجازة بتاريخ ${row.date}`, 'red');
-                    return;
-                }
+                if (alreadyUsed) { toast(`🔒 ${empName} محجوز في فترة أخرى`, 'red'); return; }
+                if (isEmployeeOnLeave(empName, row.date)) { toast(`🚫 ${empName} في إجازة بتاريخ ${row.date}`, 'red'); return; }
                 row.names.add(empName);
             }
             renderSchedulerTable();
             renderSchedulerBank();
         }
 
-        function removeSchedulerPill(rowId, empName) {
-            const row = rows.find(r => r.id === rowId);
-            if (row) { row.names.delete(empName);
-                renderSchedulerTable();
-                renderSchedulerBank(); }
-        }
+        function removeSchedulerPill(rowId, empName) { const row = rows.find(r => r.id === rowId); if (row) { row.names.delete(
+                empName);
+            renderSchedulerTable();
+            renderSchedulerBank(); } }
 
         function setSchedulerActive(id) { activeRowId = id;
             renderSchedulerTable();
             renderSchedulerBank(); }
 
-        function addSchedulerRow() {
-            const today = new Date().toISOString().split('T')[0];
+        function addSchedulerRow() { const today = new Date().toISOString().split('T')[0];
             rows.push({ id: ++rowCounter, date: today, period: PERIODS[0], names: new Set(), time: '08:00' });
             activeRowId = rowCounter;
             renderSchedulerTable();
             renderSchedulerBank();
-            updateSchedulerHeader();
-        }
+            updateSchedulerHeader(); }
 
-        function deleteSchedulerRow(id) {
-            rows = rows.filter(r => r.id !== id);
-            if (activeRowId === id) activeRowId = rows.length ? rows[rows.length - 1].id : null;
+        function deleteSchedulerRow(id) { rows = rows.filter(r => r.id !== id); if (activeRowId === id) activeRowId = rows.length ?
+                rows[rows.length - 1].id : null;
             renderSchedulerTable();
             renderSchedulerBank();
-            updateSchedulerHeader();
-        }
+            updateSchedulerHeader(); }
 
-        function resetSchedulerBank() {
-            rows.forEach(r => r.names.clear());
+        function resetSchedulerBank() { rows.forEach(r => r.names.clear());
             renderSchedulerTable();
             renderSchedulerBank();
-            toast('تم إعادة تعيين الأسماء');
-        }
+            toast('تم إعادة تعيين الأسماء'); }
 
-        function clearSchedulerAll() {
-            if (!confirm('مسح جميع بيانات الجدولة؟')) return;
+        function clearSchedulerAll() { if (!confirm('مسح جميع بيانات الجدولة؟')) return;
             rows = [];
             rowCounter = 0;
             activeRowId = null;
             localStorage.removeItem('sched_v3');
             addSchedulerRow();
-            toast('تم المسح');
-        }
+            toast('تم المسح'); }
 
-        function saveSchedulerLS() {
-            const data = rows.map(r => ({ id: r.id, date: r.date, period: r.period, names: [...r.names], time: r.time }));
+        function saveSchedulerLS() { const data = rows.map(r => ({ id: r.id, date: r.date, period: r.period, names: [...r.names],
+                time: r.time }));
             localStorage.setItem('sched_v3', JSON.stringify({ rows: data, counter: rowCounter }));
-            toast('تم الحفظ ✓', 'green');
-        }
+            toast('تم الحفظ ✓', 'green'); }
 
-        function loadSchedulerLS() {
-            try {
-                const raw = localStorage.getItem('sched_v3');
-                if (!raw) return;
-                const saved = JSON.parse(raw);
-                rowCounter = saved.counter || 0;
-                rows = (saved.rows || []).map(r => ({ ...r, names: new Set(r.names) }));
-                if (rows.length) activeRowId = rows[rows.length - 1].id;
-            } catch (e) { console.warn('load error', e); }
-        }
+        function loadSchedulerLS() { try { const raw = localStorage.getItem('sched_v3'); if (!raw) return; const saved = JSON.parse(
+                raw);
+            rowCounter = saved.counter || 0;
+            rows = (saved.rows || []).map(r => ({ ...r, names: new Set(r.names) })); if (rows.length) activeRowId = rows[rows
+                .length - 1].id; } catch (e) { console.warn('load error', e); } }
 
-        function generateSchedulerText() {
-            let text = '📋 جدول الدوام\n';
+        function generateSchedulerText() { let text = '📋 جدول الدوام\n';
             text += '═'.repeat(30) + '\n';
-            rows.forEach((row, i) => {
-                const dateStr = row.date || '—';
+            rows.forEach((row, i) => { const dateStr = row.date || '—';
                 text += `🔹 الفترة ${i+1}: ${row.period}\n`;
                 text += `📅 ${dateStr}  ⏰ ${row.time}\n`;
-                text += `👥 الأفراد (${row.names.size}):\n`;
-                if (row.names.size === 0) text += '   (لا يوجد)\n';
+                text += `👥 الأفراد (${row.names.size}):\n`; if (row.names.size === 0) text += '   (لا يوجد)\n';
                 else [...row.names].forEach(n => text += `   - ${n}\n`);
-                text += '\n';
-            });
-            text += '═'.repeat(30) + '\n';
-            const totalAssigned = rows.reduce((sum, r) => sum + r.names.size, 0);
-            text += `📊 إجمالي الفترات: ${rows.length} | الأفراد الموزعين: ${totalAssigned}`;
-            return text;
-        }
+                text += '\n'; });
+            text += '═'.repeat(30) + '\n'; const totalAssigned = rows.reduce((sum, r) => sum + r.names.size, 0);
+            text += `📊 إجمالي الفترات: ${rows.length} | الأفراد الموزعين: ${totalAssigned}`; return text; }
 
-        function copySchedulerText() {
-            const text = generateSchedulerText();
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => toast('تم نسخ الجدول ✓', 'green'));
-            } else {
-                const ta = document.createElement('textarea');
+        function copySchedulerText() { const text = generateSchedulerText(); if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => toast('تم نسخ الجدول ✓', 'green')); } else { const ta = document
+                    .createElement('textarea');
                 ta.value = text;
                 document.body.appendChild(ta);
                 ta.select();
                 document.execCommand('copy');
                 ta.remove();
-                toast('تم نسخ الجدول ✓', 'green');
+                toast('تم نسخ الجدول ✓', 'green'); } }
+
+        // ═══════════════════════════════════════════
+        //  ATTENDANCE SYSTEM (تحضير الفريق)
+        // ═══════════════════════════════════════════
+        const AttendanceModule = {
+            members: [
+                "يوسف الحجري", "نايف الكربي", "محمد ناصر", "امداد شاء", "محمد الغالي",
+                "سمير عيساوي", "عبد الرحمن ناجي", "مصعب بري", "صالح عوض", "عثمان جافيد",
+                "عبد الباسط", "شير علي", "سالم ابراهيم", "فضل طه", "فوزي يورو",
+                "حميد الطاهر", "محمد توفيق", "خالد العنسي"
+            ],
+            statuses: [
+                { key: 'present', label: 'متواجد', class: 'att-present' },
+                { key: 'permission', label: 'مرخص', class: 'att-permission' },
+                { key: 'sick', label: 'مرضيه', class: 'att-sick' },
+                { key: 'annual', label: 'إجازه سنويه', class: 'att-annual' },
+                { key: 'casual', label: 'عرضيه', class: 'att-casual' },
+                { key: 'course', label: 'دوره', class: 'att-course' }
+            ],
+            selections: {},
+            patrolAssignments: {},
+            patrolNumbers: ['1', '2'],
+            currentPatrolCount: 2,
+
+            init() {
+                this.selections = {};
+                this.patrolAssignments = {};
+                this.patrolNumbers = ['1', '2'];
+                this.currentPatrolCount = 2;
+                const dateInput = document.getElementById('attendanceDate');
+                if (dateInput) {
+                    const today = new Date();
+                    dateInput.value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                }
+                this.renderAll();
+                this.setupPatrolNumbers();
+            },
+
+            getStatusLabel(statusKey) {
+                const found = this.statuses.find(s => s.key === statusKey);
+                return found ? found.label : 'غير محدد';
+            },
+
+            getPresentMembers() { return this.members.filter(m => this.selections[m] === 'present'); },
+            getUnassignedPresentMembers() { return this.getPresentMembers().filter(m => !(m in this.patrolAssignments)); },
+            getAssignedMembersForPatrol(patrolLabel) {
+                return Object.entries(this.patrolAssignments).filter(([name, pLabel]) => pLabel === patrolLabel && this
+                    .selections[name] === 'present').map(([name]) => name);
+            },
+
+            renderAll() { this.renderMemberList();
+                this.updateSummary();
+                this.renderAbsentSection();
+                this.refreshPatrolUI(); },
+            renderMemberList() {
+                const container = document.getElementById('attMemberList');
+                if (!container) return;
+                container.innerHTML = '';
+                this.members.forEach((member, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'att-member-row';
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'att-member-name';
+                    nameSpan.textContent = `${index + 1}. ${member}`;
+                    const buttonsDiv = document.createElement('div');
+                    buttonsDiv.className = 'att-status-buttons';
+                    this.statuses.forEach(status => {
+                        const btn = document.createElement('button');
+                        btn.className = `att-status-btn ${status.class}`;
+                        btn.textContent = status.label;
+                        if (this.selections[member] === status.key) btn.classList.add('att-active');
+                        btn.addEventListener('click', () => this.selectStatus(member, status
+                            .key));
+                        buttonsDiv.appendChild(btn);
+                    });
+                    row.appendChild(nameSpan);
+                    row.appendChild(buttonsDiv);
+                    container.appendChild(row);
+                });
+            },
+            selectStatus(member, statusKey) {
+                if (this.selections[member] !== statusKey) {
+                    this.selections[member] = statusKey;
+                    if (statusKey !== 'present') delete this.patrolAssignments[member];
+                }
+                this.renderAll();
+            },
+            updateSummary() {
+                const total = this.members.length;
+                let present = 0,
+                    absent = 0;
+                this.members.forEach(member => {
+                    const sel = this.selections[member];
+                    if (sel === 'present') present++;
+                    else if (sel && sel !== 'present') absent++;
+                });
+                const tc = document.getElementById('attTotalCount');
+                const pc = document.getElementById('attPresentCount');
+                const ac = document.getElementById('attAbsentCount');
+                if (tc) tc.textContent = total;
+                if (pc) pc.textContent = present;
+                if (ac) ac.textContent = absent;
+            },
+            renderAbsentSection() {
+                const categories = {
+                    permission: { containerId: 'attPermissionList', cssClass: 'att-permission' },
+                    sick: { containerId: 'attSickList', cssClass: 'att-sick' },
+                    annual: { containerId: 'attAnnualList', cssClass: 'att-annual' },
+                    casual: { containerId: 'attCasualList', cssClass: 'att-casual' },
+                    course: { containerId: 'attCourseList', cssClass: 'att-course' }
+                };
+                for (const [key, config] of Object.entries(categories)) {
+                    const container = document.getElementById(config.containerId);
+                    if (!container) continue;
+                    const filteredMembers = this.members.filter(m => this.selections[m] === key);
+                    if (filteredMembers.length === 0) {
+                        container.innerHTML = '<span style="color:#bdc3c7;font-size:12px;">لا يوجد</span>';
+                    } else {
+                        container.innerHTML = filteredMembers.map(m => `<span class="att-absent-tag ${config.cssClass}">${m}</span>`)
+                            .join('');
+                    }
+                }
+            },
+            setupPatrolNumbers() {
+                const input = document.getElementById('attPatrolCount');
+                if (!input) return;
+                let count = parseInt(input.value, 10);
+                if (isNaN(count) || count < 1) count = 1;
+                if (count > 10) count = 10;
+                input.value = count;
+                this.currentPatrolCount = count;
+                const oldNumbers = [...this.patrolNumbers];
+                this.patrolNumbers = [];
+                for (let i = 0; i < count; i++) {
+                    if (i < oldNumbers.length && oldNumbers[i].trim() !== '') this.patrolNumbers.push(oldNumbers[i]);
+                    else this.patrolNumbers.push(String(i + 1));
+                }
+                const validLabels = new Set(this.patrolNumbers);
+                Object.keys(this.patrolAssignments).forEach(member => {
+                    if (!validLabels.has(this.patrolAssignments[member])) delete this.patrolAssignments[member];
+                });
+                this.renderPatrolNumbersInputs();
+                this.refreshPatrolUI();
+            },
+            renderPatrolNumbersInputs() {
+                const container = document.getElementById('attPatrolNumbersSetup');
+                if (!container) return;
+                container.innerHTML = '';
+                this.patrolNumbers.forEach((num, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'att-patrol-number-input';
+                    const label = document.createElement('label');
+                    label.textContent = `🔹 دورية ${index + 1} رقم:`;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = num;
+                    input.placeholder = 'مثال: 1 أو A';
+                    input.addEventListener('input', e => this.updatePatrolNumber(index, e.target.value));
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    container.appendChild(div);
+                });
+            },
+            updatePatrolNumber(index, newValue) {
+                const oldLabel = this.patrolNumbers[index];
+                const newLabel = newValue.trim() === '' ? String(index + 1) : newValue.trim();
+                this.patrolNumbers[index] = newLabel;
+                if (oldLabel !== newLabel) {
+                    Object.keys(this.patrolAssignments).forEach(member => {
+                        if (this.patrolAssignments[member] === oldLabel) this.patrolAssignments[member] = newLabel;
+                    });
+                }
+                this.refreshPatrolUI();
+            },
+            refreshPatrolUI() { this.renderAvailableMembers();
+                this.renderPatrolColumns(); },
+            renderAvailableMembers() {
+                const container = document.getElementById('attAvailableMembersContainer');
+                if (!container) return;
+                const unassigned = this.getUnassignedPresentMembers();
+                if (unassigned.length === 0) {
+                    container.innerHTML = '<span style="color:#95a5a6;font-size:13px;">جميع المتواجدين موزعون ✅</span>';
+                    return;
+                }
+                container.innerHTML = '';
+                unassigned.forEach(member => {
+                    const chip = document.createElement('span');
+                    chip.className = 'att-member-chip';
+                    chip.textContent = member;
+                    chip.title = 'اختر الدورية ثم اضغط على الاسم للإضافة';
+                    container.appendChild(chip);
+                });
+            },
+            renderPatrolColumns() {
+                const container = document.getElementById('attPatrolColumnsContainer');
+                if (!container) return;
+                container.innerHTML = '';
+                this.patrolNumbers.forEach((patrolLabel) => {
+                    const column = document.createElement('div');
+                    column.className = 'att-patrol-column';
+                    const header = document.createElement('h4');
+                    header.innerHTML = `🔹 <span class="att-badge">دورية ${patrolLabel}</span>`;
+                    column.appendChild(header);
+                    const addArea = document.createElement('div');
+                    addArea.className = 'att-available-members';
+                    addArea.style.marginBottom = '10px';
+                    const unassigned = this.getUnassignedPresentMembers();
+                    if (unassigned.length > 0) {
+                        unassigned.forEach(member => {
+                            const addBtn = document.createElement('span');
+                            addBtn.className = 'att-member-chip';
+                            addBtn.textContent = `➕ ${member}`;
+                            addBtn.style.cursor = 'pointer';
+                            addBtn.addEventListener('click', () => this.assignMemberToPatrol(member,
+                                patrolLabel));
+                            addArea.appendChild(addBtn);
+                        });
+                    } else {
+                        addArea.innerHTML =
+                            '<span style="color:#95a5a6;font-size:12px;">لا يوجد متواجدين متاحين</span>';
+                    }
+                    column.appendChild(addArea);
+                    const assignedList = document.createElement('div');
+                    assignedList.className = 'att-assigned-list';
+                    const assignedMembers = this.getAssignedMembersForPatrol(patrolLabel);
+                    if (assignedMembers.length > 0) {
+                        assignedMembers.forEach(member => {
+                            const tag = document.createElement('span');
+                            tag.className = 'att-assigned-tag';
+                            tag.innerHTML =
+                                `${member} <button class="att-remove-btn" title="إزالة">&times;</button>`;
+                            tag.querySelector('.att-remove-btn').addEventListener('click', () => this
+                                .removeMemberFromPatrol(member));
+                            assignedList.appendChild(tag);
+                        });
+                    } else {
+                        assignedList.innerHTML = '<span style="color:#bdc3c7;font-size:13px;">فارغة</span>';
+                    }
+                    column.appendChild(assignedList);
+                    container.appendChild(column);
+                });
+            },
+            assignMemberToPatrol(member, patrolLabel) {
+                if (this.selections[member] !== 'present') { alert('هذا العضو غير متواجد!'); return; }
+                this.patrolAssignments[member] = patrolLabel;
+                this.refreshPatrolUI();
+            },
+            removeMemberFromPatrol(member) { delete this.patrolAssignments[member];
+                this.refreshPatrolUI(); },
+            copyTable() {
+                const dateInput = document.getElementById('attendanceDate');
+                let dateValue = dateInput ? dateInput.value : '';
+                let formattedDate = dateValue;
+                if (dateValue) {
+                    const parts = dateValue.split('-');
+                    if (parts.length === 3) formattedDate = `${parts[2]} / ${parts[1]} / ${parts[0]}`;
+                } else formattedDate = '______';
+
+                let text = `📋 تقرير تحضير الفريق - تاريخ: ${formattedDate}\n`;
+                text += `══════════════════════════\n\n👥 حالة الأعضاء:\n──────────────────────────────\n`;
+                this.members.forEach((member, index) => {
+                    const statusKey = this.selections[member];
+                    const statusLabel = statusKey ? this.getStatusLabel(statusKey) : '⏳ لم يحدد';
+                    const emoji = statusKey === 'present' ? '✅' : (statusKey ? '❌' : '⬜');
+                    text += `${index + 1}. ${member}: ${emoji} ${statusLabel}\n`;
+                });
+                const total = this.members.length;
+                let present = 0,
+                    absent = 0;
+                this.members.forEach(member => {
+                    const sel = this.selections[member];
+                    if (sel === 'present') present++;
+                    else if (sel && sel !== 'present') absent++;
+                });
+                text +=
+                    `\n──────────────────────────────\n👥 الإجمالي: ${total} | ✅ متواجد: ${present} | ❌ غياب: ${absent}\n`;
+                const absentCategories = [
+                    { key: 'permission', label: '🟠 مرخص' }, { key: 'sick', label: '🔴 مرضيه' },
+                    { key: 'annual', label: '🟣 إجازه سنويه' }, { key: 'casual', label: '🔵 عرضيه' },
+                    { key: 'course', label: '🩵 دوره' }
+                ];
+                let hasAbsent = false;
+                for (const cat of absentCategories) {
+                    const catMembers = this.members.filter(m => this.selections[m] === cat.key);
+                    if (catMembers.length > 0) {
+                        if (!hasAbsent) { text += `\n📌 الغيابات والإجازات:\n──────────────────────────────\n`;
+                            hasAbsent = true; }
+                        text += `${cat.label}: ${catMembers.join(' | ')}\n`;
+                    }
+                }
+                if (this.patrolNumbers.length > 0 && Object.keys(this.patrolAssignments).length > 0) {
+                    text += `\n🔄 توزيع الدوريات:\n──────────────────────────────\n`;
+                    this.patrolNumbers.forEach(patrolLabel => {
+                        const membersInPatrol = this.getAssignedMembersForPatrol(patrolLabel);
+                        text += membersInPatrol.length > 0 ?
+                            `🔹 دورية ${patrolLabel}: ${membersInPatrol.join(' | ')}\n` :
+                            `🔹 دورية ${patrolLabel}: (فارغة)\n`;
+                    });
+                }
+                text += `\n══════════════════════════\n`;
+                const textarea = document.getElementById('hiddenCopyArea');
+                textarea.value = text;
+                textarea.select();
+                textarea.setSelectionRange(0, 99999);
+                try {
+                    navigator.clipboard.writeText(text).then(() => this.showCopiedMessage()).catch(() => {
+                        document.execCommand('copy');
+                        this.showCopiedMessage();
+                    });
+                } catch (e) { document.execCommand('copy');
+                    this.showCopiedMessage(); }
+            },
+            showCopiedMessage() {
+                const msg = document.getElementById('attCopiedMessage');
+                if (msg) { msg.style.display = 'block';
+                    setTimeout(() => { msg.style.display = 'none'; }, 2500); }
+            }
+        };
+
+        // ═══════════════════════════════════════════
+        //  ATTENDANCE MODAL PIN & LOADING
+        // ═══════════════════════════════════════════
+        function showAttendancePin() {
+            const modal = document.getElementById('attendanceModal');
+            const content = document.getElementById('attendanceModalContent');
+            content.innerHTML = `
+            <div class="att-inner" style="text-align:center;padding:30px;">
+                <h3 style="color:#2c3e50;">🔐 رمز الدخول</h3>
+                <p style="color:#7f8c8d;">أدخل الرمز لفتح نظام تحضير الفريق وتقسيم الدوريات:</p>
+                <input type="password" id="attendancePinInput" class="pin-input" placeholder="****" maxlength="10">
+                <br><button class="pin-btn" onclick="checkAttendancePin()">تحقق</button>
+                <p id="attendancePinError" class="pin-error" style="display:none;">❌ الرمز غير صحيح</p>
+                <button class="att-close-btn" style="margin-top:15px;" onclick="document.getElementById('attendanceModal').style.display='none'">إغلاق</button>
+            </div>`;
+            modal.style.display = 'flex';
+            setTimeout(() => { const inp = document.getElementById('attendancePinInput'); if (inp) inp.focus(); }, 200);
+        }
+
+        function checkAttendancePin() {
+            const input = document.getElementById('attendancePinInput');
+            if (!input) return;
+            if (btoa(input.value) === CORRECT_PIN_ENCODED) {
+                loadAttendanceContent();
+            } else {
+                const err = document.getElementById('attendancePinError');
+                if (err) err.style.display = 'block';
+                input.value = '';
+                input.focus();
             }
         }
 
-        // ═══════════════════════════════════════════
-        //  TOAST
-        // ═══════════════════════════════════════════
-        let toastTimer;
-
-        function toast(msg, type = '') {
-            const el = document.getElementById('toast');
-            clearTimeout(toastTimer);
-            el.textContent = msg;
-            el.className = 'toast' + (type ? ' ' + type : '') + ' show';
-            toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+        function loadAttendanceContent() {
+            const content = document.getElementById('attendanceModalContent');
+            content.innerHTML = `
+            <div class="att-inner">
+                <div class="att-header"><h2>📋 جدول تحضير الفريق</h2><div class="att-subtitle">اختر الحالة لكل عضو | ثم وزع المتواجدين يدوياً على الدوريات</div></div>
+                <div class="att-date-box"><label for="attendanceDate">📅 التاريخ:</label><input type="date" id="attendanceDate"></div>
+                <div class="att-legend"><span>🟢 متواجد</span><span>🟠 مرخص</span><span>🔴 مرضيه</span><span>🟣 سنويه</span><span>🔵 عرضيه</span><span>🩵 دوره</span></div>
+                <div class="att-section-title">👥 حالة الأعضاء</div>
+                <div class="att-member-list" id="attMemberList"></div>
+                <div class="att-summary-box"><span>👥 الإجمالي: <strong id="attTotalCount">0</strong></span><span>✅ متواجد: <strong id="attPresentCount">0</strong></span><span>❌ غياب: <strong id="attAbsentCount">0</strong></span></div>
+                <div class="att-absent-section">
+                    <div class="att-section-title" style="margin-top:0;border-bottom-color:#e74c3c;">📌 الغيابات والإجازات</div>
+                    <div class="att-absent-grid">
+                        <div class="att-absent-category"><h5>🟠 مرخص</h5><div id="attPermissionList"></div></div>
+                        <div class="att-absent-category"><h5>🔴 مرضيه</h5><div id="attSickList"></div></div>
+                        <div class="att-absent-category"><h5>🟣 إجازه سنويه</h5><div id="attAnnualList"></div></div>
+                        <div class="att-absent-category"><h5>🔵 عرضيه</h5><div id="attCasualList"></div></div>
+                        <div class="att-absent-category"><h5>🩵 دوره</h5><div id="attCourseList"></div></div>
+                    </div>
+                </div>
+                <div class="att-patrol-section">
+                    <div class="att-section-title" style="margin-top:0;border-bottom-color:#f39c12;">🔄 تقسيم الدوريات (يدوي)</div>
+                    <div class="att-patrol-setup-area"><label for="attPatrolCount">🔢 كم دورية تريد؟</label><input type="number" id="attPatrolCount" min="1" max="10" value="2"><button onclick="AttendanceModule.setupPatrolNumbers()">✅ إنشاء خانات أرقام الدوريات</button></div>
+                    <div class="att-patrol-numbers-setup" id="attPatrolNumbersSetup"></div>
+                    <p style="text-align:center;font-weight:600;color:#2c3e50;margin-bottom:10px;">🟢 اضغط على اسم المتواجد لإضافته إلى الدورية المطلوبة:</p>
+                    <div style="background:#f0faf7;border-radius:12px;padding:12px;margin-bottom:15px;"><strong style="color:#0e6655;">👤 متواجدون لم يتم توزيعهم بعد:</strong><div class="att-available-members" id="attAvailableMembersContainer"></div></div>
+                    <div class="att-patrol-columns" id="attPatrolColumnsContainer"></div>
+                </div>
+                <div class="att-copy-area">
+                    <button class="att-copy-btn" onclick="AttendanceModule.copyTable()">📋 نسخ التقرير الكامل للإرسال</button>
+                    <span class="att-copied-msg" id="attCopiedMessage">✅ تم النسخ! ألصقه في الواتساب أو أي مكان.</span>
+                </div>
+                <button class="att-close-btn" onclick="document.getElementById('attendanceModal').style.display='none'">✕ إغلاق</button>
+            </div>`;
+            AttendanceModule.init();
         }
 
         // ═══════════════════════════════════════════
         //  EVENT LISTENERS
         // ═══════════════════════════════════════════
-        document.getElementById('priorityModal').addEventListener('click', function(e) { if (e.target === this) this
-                .style.display = 'none'; });
-        document.getElementById('schedulerModal').addEventListener('click', function(e) { if (e.target === this) this
-                .style.display = 'none'; });
+        document.getElementById('priorityModal').addEventListener('click', function(e) { if (e.target === this) this.style
+                .display = 'none'; });
+        document.getElementById('schedulerModal').addEventListener('click', function(e) { if (e.target === this) this.style
+                .display = 'none'; });
+        document.getElementById('attendanceModal').addEventListener('click', function(e) { if (e.target === this) this.style
+                .display = 'none'; });
         document.addEventListener('keyup', function(e) {
             if (e.key === 'Enter') {
-                if (document.getElementById('priorityPinInput') && document.getElementById('priorityModal').style
-                    .display === 'flex') checkPriorityPin();
-                if (document.getElementById('schedulerPinInput') && document.getElementById('schedulerModal').style
-                    .display === 'flex') checkSchedulerPin();
+                if (document.getElementById('priorityPinInput') && document.getElementById('priorityModal').style.display ===
+                    'flex') checkPriorityPin();
+                if (document.getElementById('schedulerPinInput') && document.getElementById('schedulerModal').style.display ===
+                    'flex') checkSchedulerPin();
+                if (document.getElementById('attendancePinInput') && document.getElementById('attendanceModal').style.display ===
+                    'flex') checkAttendancePin();
             }
         });
         document.addEventListener('keydown', e => {
@@ -1747,6 +2503,7 @@
             if (e.key === 'Escape') {
                 document.getElementById('schedulerModal').style.display = 'none';
                 document.getElementById('priorityModal').style.display = 'none';
+                document.getElementById('attendanceModal').style.display = 'none';
             }
         });
     </script>
